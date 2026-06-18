@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion — Hôpital de Suna</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="sand-overlay"></div>
+
+  <!-- LOGIN -->
+  <div id="auth-screen" class="screen">
+    <div class="auth-container">
+      <div class="hospital-emblem">&#x2695;</div>
+      <h1>Espace Gérance</h1>
+      <p class="subtitle">Réservé aux Gérants & Co-Gérants de l'Hôpital</p>
+
+      <form id="login-form" class="auth-form">
+        <div class="field">
+          <label>Nom</label>
+          <input type="text" id="login-nom" required>
+        </div>
+        <div class="field">
+          <label>Prénom</label>
+          <input type="text" id="login-prenom" required>
+        </div>
+        <div class="field">
+          <label>Sceau Secret</label>
+          <input type="password" id="login-sceau" required>
+        </div>
+        <button type="submit" class="btn-primary">Accéder à la Gérance</button>
+        <p id="login-error" class="error"></p>
+      </form>
+
+      <a href="index.html" class="back-link">← Retour à l'hôpital</a>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="admin-screen" class="screen hidden">
+    <header>
+      <div class="header-left">
+        <span class="hospital-emblem-sm">&#x2695;</span>
+        <h2>Gérance — Hôpital de Suna</h2>
+      </div>
+      <div class="header-right">
+        <span id="user-name"></span>
+        <span id="user-role-badge" class="role-badge"></span>
+        <a href="index.html" class="btn-sm">Hôpital</a>
+        <button id="logout-btn" class="btn-sm">Déconnexion</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Stats rapides -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-inscrits">0</div>
+          <div class="stat-label">Shinobis inscrits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-en-poste">0</div>
+          <div class="stat-label">En poste actuellement</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-alertes">0</div>
+          <div class="stat-label">Alertes actives</div>
+        </div>
+      </section>
+
+      <!-- Canal de gérance -->
+      <section class="chat-section">
+        <h3>&#x1F4AC; Canal de Gérance</h3>
+        <p class="info-text">Discussion privée entre gérants et co-gérants.</p>
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" placeholder="Écrire un message..." autocomplete="off" maxlength="500">
+          <button type="submit" class="btn-primary" style="width:auto;padding:10px 20px">Envoyer</button>
+        </form>
+      </section>
+
+      <!-- Filtres -->
+      <section class="filter-section">
+        <h3>&#x1F4CB; Historique de Présence</h3>
+        <div class="filters">
+          <div class="field">
+            <label>Période</label>
+            <select id="filter-period">
+              <option value="today">Aujourd'hui</option>
+              <option value="week" selected>Cette semaine</option>
+              <option value="month">Ce mois</option>
+              <option value="all">Tout</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Shinobi</label>
+            <select id="filter-shinobi">
+              <option value="all">Tous</option>
+            </select>
+          </div>
+          <button id="btn-refresh" class="btn-primary" style="width:auto;margin-top:20px;padding:10px 20px">Actualiser</button>
+        </div>
+      </section>
+
+      <!-- Tableau récap par personne -->
+      <section class="recap-section">
+        <h3>&#x23F1; Récapitulatif des Heures</h3>
+        <div class="table-wrapper">
+          <table id="recap-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Rôle</th>
+                <th>Nb de postes</th>
+                <th>Temps total</th>
+                <th>Moy. / poste</th>
+                <th>Dernier poste</th>
+              </tr>
+            </thead>
+            <tbody id="recap-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Gestion des postes (forcer) -->
+      <section class="postes-admin-section">
+        <h3>&#x1F6E1; Gestion des Postes</h3>
+        <p class="info-text">Mettre ou retirer un shinobi de son poste manuellement.</p>
+        <div class="table-wrapper">
+          <table id="postes-admin-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Statut</th>
+                <th>Depuis</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="postes-admin-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Gestion de la paye -->
+      <section class="paye-section">
+        <h3>&#x1F4B0; Gestion de la Paye</h3>
+        <div class="paye-config">
+          <div class="field">
+            <label>Taux horaire (Ryos/h)</label>
+            <div class="inline-input">
+              <input type="number" id="taux-horaire" min="1" value="500">
+              <button id="btn-save-taux" class="btn-primary" style="width:auto;padding:10px 20px">Sauvegarder</button>
+            </div>
+          </div>
+        </div>
+        <div class="filters" style="margin-bottom:16px">
+          <div class="field">
+            <label>Période de paye</label>
+            <select id="paye-period">
+              <option value="today">Aujourd'hui</option>
+              <option value="week" selected>Cette semaine</option>
+              <option value="month">Ce mois</option>
+              <option value="all">Tout</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="paye-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Grade</th>
+                <th>Heures travaillées</th>
+                <th>Taux (Ryos/h)</th>
+                <th>Paye totale</th>
+              </tr>
+            </thead>
+            <tbody id="paye-body"></tbody>
+          </table>
+        </div>
+        <div class="paye-total">
+          Total des payes : <strong id="paye-grand-total">0</strong> Ryos
+        </div>
+      </section>
+
+      <!-- Gestion des grades -->
+      <section class="grades-section">
+        <h3>&#x1F396; Gestion des Grades</h3>
+        <p class="info-text">Attribuez un grade médical aux shinobis : <strong>Stagiaire</strong> → <strong>Aspirant</strong> → <strong>Adepte</strong> → <strong>Expert</strong></p>
+        <div class="table-wrapper">
+          <table id="grades-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Rôle</th>
+                <th>Grade actuel</th>
+                <th>Promotion</th>
+              </tr>
+            </thead>
+            <tbody id="grades-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Gestion des rôles -->
+      <section class="roles-section">
+        <h3>&#x1F451; Gestion des Rôles</h3>
+        <p class="info-text">Promouvoir un shinobi en <strong>Gérant</strong> ou <strong>Co-Gérant</strong>, ou le repasser <strong>Membre</strong>. Gérants et co-gérants ont accès à cet espace de gérance.</p>
+        <div class="table-wrapper">
+          <table id="roles-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Rôle actuel</th>
+                <th>Changer le rôle</th>
+              </tr>
+            </thead>
+            <tbody id="roles-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Avertissements -->
+      <section class="avert-section">
+        <h3>&#x26A0; Avertissements</h3>
+        <div class="avert-form">
+          <div class="filters">
+            <div class="field">
+              <label>Shinobi</label>
+              <select id="avert-shinobi"></select>
+            </div>
+            <div class="field">
+              <label>Raison</label>
+              <input type="text" id="avert-raison" placeholder="Raison de l'avertissement...">
+            </div>
+            <button id="btn-add-avert" class="btn-primary" style="width:auto;margin-top:20px;padding:10px 20px">Donner un avertissement</button>
+          </div>
+        </div>
+        <div class="table-wrapper" style="margin-top:16px">
+          <table id="avert-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Raison</th>
+                <th>Par</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="avert-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Détail des postes -->
+      <section class="detail-section">
+        <h3>&#x1F4C3; Détail des Postes</h3>
+        <div class="table-wrapper">
+          <table id="detail-table">
+            <thead>
+              <tr>
+                <th>Shinobi</th>
+                <th>Date</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Durée</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="detail-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hôpital de Suna — Centre Médical Shinobi</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="sand-overlay"></div>
+
+  <!-- LOGIN / REGISTER -->
+  <div id="auth-screen" class="screen">
+    <div class="auth-container">
+      <div class="hospital-emblem">&#x2695;</div>
+      <h1>Hôpital de Sunagakure</h1>
+      <p class="subtitle">Centre Médical Shinobi — Unité de Soin</p>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Identification</button>
+        <button class="tab" data-tab="register">Enregistrement</button>
+      </div>
+
+      <!-- Login -->
+      <form id="login-form" class="auth-form">
+        <div class="field">
+          <label>Nom</label>
+          <input type="text" id="login-nom" placeholder="Gaïa" required>
+        </div>
+        <div class="field">
+          <label>Prénom</label>
+          <input type="text" id="login-prenom" placeholder="Artel" required>
+        </div>
+        <div class="field">
+          <label>Sceau Secret</label>
+          <input type="password" id="login-sceau" placeholder="Votre sceau d'identification" required>
+        </div>
+        <button type="submit" class="btn-primary">Entrer dans l'Hôpital</button>
+        <p id="login-error" class="error"></p>
+      </form>
+
+      <!-- Register -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="field">
+          <label>Nom</label>
+          <input type="text" id="reg-nom" placeholder="Gaïa" required>
+        </div>
+        <div class="field">
+          <label>Prénom</label>
+          <input type="text" id="reg-prenom" placeholder="Artel" required>
+        </div>
+        <div class="field">
+          <label>Sceau Secret</label>
+          <input type="password" id="reg-sceau" placeholder="Choisissez votre sceau" required>
+        </div>
+        <div class="field">
+          <label>Confirmer le Sceau</label>
+          <input type="password" id="reg-sceau2" placeholder="Confirmez votre sceau" required>
+        </div>
+        <button type="submit" class="btn-primary">S'enregistrer au Centre</button>
+        <p id="reg-error" class="error"></p>
+        <p id="reg-success" class="success"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard-screen" class="screen hidden">
+    <header>
+      <div class="header-left">
+        <span class="hospital-emblem-sm">&#x2695;</span>
+        <h2>Hôpital de Sunagakure</h2>
+      </div>
+      <div class="header-right">
+        <span id="user-name"></span>
+        <a href="admin.html" class="btn-sm">Gérance</a>
+        <button id="logout-btn" class="btn-sm">Quitter le poste</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Status -->
+      <section class="status-section">
+        <div id="server-status" class="status-card">
+          <div class="status-indicator offline"></div>
+          <span>Le village est endormi — Hors horaires de service</span>
+        </div>
+        <div class="clock" id="clock"></div>
+      </section>
+
+      <!-- Poste -->
+      <section class="poste-section">
+        <h3>&#x1f3e5; Prise de Poste</h3>
+        <p class="info-text">Les portes de l'hôpital sont ouvertes de <strong>18h30</strong> à <strong>3h00</strong>.</p>
+        <div class="poste-controls">
+          <button id="btn-poste" class="btn-poste" disabled>Prendre son poste</button>
+          <span id="poste-status" class="poste-badge">Hors service</span>
+        </div>
+        <div id="poste-list" class="poste-list">
+          <h4>Personnel en poste actuellement</h4>
+          <ul id="personnel-list"></ul>
+        </div>
+      </section>
+
+      <!-- Alertes -->
+      <section class="alertes-section">
+        <h3>&#x1f6a8; Alertes Médicales</h3>
+        <div class="alerte-buttons">
+          <button id="btn-urgence" class="btn-alerte urgence" disabled>
+            <span class="alerte-icon">&#x26A0;</span>
+            <span class="alerte-title">Appel d'Urgence</span>
+            <span class="alerte-desc">Demander des renforts médicaux immédiats</span>
+          </button>
+          <button id="btn-chirurgien" class="btn-alerte chirurgien" disabled>
+            <span class="alerte-icon">&#x2702;</span>
+            <span class="alerte-title">Demande de Chirurgien</span>
+            <span class="alerte-desc">Requérir un spécialiste en chirurgie</span>
+          </button>
+        </div>
+
+        <!-- Active alerts -->
+        <div id="alertes-actives" class="alertes-list hidden">
+          <h4>Alertes en cours</h4>
+          <ul id="alertes-list"></ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Alert Modal -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 id="modal-title"></h3>
+      <textarea id="modal-message" placeholder="Décrivez la situation..." rows="3"></textarea>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn-sm">Annuler</button>
+        <button id="modal-confirm" class="btn-primary">Envoyer l'alerte</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
