@@ -232,3 +232,26 @@ tbody tr:hover { background: rgba(196,162,101,.12); }
   .filters { flex-direction: column; }
   header { flex-direction: column; gap: 10px; }
 }
+
+/* ===== MODE SOMBRE (admin) ===== */
+body.dark .stat-card,
+body.dark .filter-section,
+body.dark .recap-section, body.dark .detail-section,
+body.dark .grades-section,
+body.dark .postes-admin-section, body.dark .paye-section, body.dark .avert-section,
+body.dark .roles-section, body.dark .chat-section, body.dark .cours-admin-section {
+  background: rgba(40,30,18,.92); border-color: #4a3a28;
+}
+body.dark .stat-label { color: #b9a684; }
+body.dark .filters select, body.dark .inline-input input,
+body.dark .avert-form input, body.dark .chat-form input {
+  background: #1f1810; color: #ece3d2; border-color: #4a3a28;
+}
+body.dark thead th { background: #0e0904; }
+body.dark tbody td { border-bottom-color: rgba(150,120,80,.22); }
+body.dark tbody tr:hover { background: rgba(150,120,80,.10); }
+body.dark .empty-row { color: #b9a684; }
+body.dark .chat-messages { background: rgba(0,0,0,.28); border-color: #4a3a28; }
+body.dark .chat-msg.theirs { background: #2a2014; border-color: #4a3a28; color: #ece3d2; }
+body.dark .btn-role.membre { background: rgba(255,255,255,.12); color: #ece3d2; }
+body.dark .back-link { color: #b9a684; }

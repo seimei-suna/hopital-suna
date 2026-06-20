@@ -322,3 +322,41 @@ h3 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 8px; color: v
   header { flex-direction: column; gap: 10px; }
   .status-section { flex-direction: column; align-items: flex-start; }
 }
+
+/* ===== BOUTON THÈME ===== */
+.theme-toggle {
+  position: fixed; bottom: 18px; right: 18px; z-index: 60;
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--sand-dark); background: rgba(250,243,227,.9);
+  cursor: pointer; font-size: 19px; line-height: 1;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25); transition: transform .2s;
+}
+.theme-toggle:hover { transform: scale(1.08); }
+
+/* ===== MODE SOMBRE ===== */
+body.dark {
+  background: radial-gradient(ellipse at 50% -10%,#3a2a16 0%,transparent 55%),
+              linear-gradient(170deg,#1d150c 0%,#150e07 60%,#0e0904 100%);
+  color: #ece3d2;
+}
+body.dark .theme-toggle { background: rgba(45,33,18,.9); border-color: #4a3a28; }
+body.dark h1, body.dark h2, body.dark h3, body.dark h4 { color: #f3e8d0; }
+body.dark .subtitle, body.dark .info-text,
+body.dark .poste-list h4, body.dark .alertes-list h4, body.dark .cours-list h4 { color: #b9a684; }
+body.dark .auth-form, body.dark .status-card,
+body.dark .poste-section, body.dark .alertes-section, body.dark .cours-section,
+body.dark .modal { background: rgba(40,30,18,.92); border-color: #4a3a28; }
+body.dark .field input, body.dark .cours-form input,
+body.dark .cours-form textarea, body.dark .modal textarea {
+  background: #1f1810; color: #ece3d2; border-color: #4a3a28;
+}
+body.dark .field label { color: #d8c8a8; }
+body.dark .tabs { border-color: #4a3a28; }
+body.dark .tab { color: #cdbc98; }
+body.dark .tab.active { background: #0e0904; color: #f3e8d0; }
+body.dark .clock { color: #f3e8d0; }
+body.dark .poste-list, body.dark .alertes-list, body.dark .cours-list { border-top-color: #4a3a28; }
+body.dark .poste-list li, body.dark .cours-list li { border-bottom-color: rgba(150,120,80,.25); }
+body.dark .cours-titre { color: #f3e8d0; }
+body.dark .btn-sm { border-color: rgba(255,255,255,.22); }
+body.dark .poste-badge:not(.actif) { background: rgba(255,255,255,.08); color: #b9a684; }

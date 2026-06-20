@@ -446,3 +446,17 @@ setInterval(checkAutoClosePostes, 30000);
 // --- Init clock ---
 setInterval(updateClock, 1000);
 updateClock();
+
+// --- Thème clair / sombre ---
+if (localStorage.getItem('hopital_theme') === 'dark') document.body.classList.add('dark');
+(function () {
+  const tbtn = document.getElementById('theme-toggle');
+  if (!tbtn) return;
+  const sync = () => { tbtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; };
+  sync();
+  tbtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('hopital_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    sync();
+  });
+})();
