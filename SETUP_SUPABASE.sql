@@ -65,6 +65,15 @@ CREATE TABLE IF NOT EXISTS messages_gerance (
   created_at timestamptz DEFAULT now()
 );
 
+-- Table des cours donnés par les membres
+CREATE TABLE IF NOT EXISTS cours (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
+  titre text NOT NULL,
+  description text,
+  created_at timestamptz DEFAULT now()
+);
+
 -- Activer RLS
 ALTER TABLE shinobis ENABLE ROW LEVEL SECURITY;
 ALTER TABLE postes ENABLE ROW LEVEL SECURITY;
@@ -72,6 +81,7 @@ ALTER TABLE alertes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE avertissements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages_gerance ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cours ENABLE ROW LEVEL SECURITY;
 
 -- DROP les policies existantes avant de les recréer
 DROP POLICY IF EXISTS "Accès public shinobis" ON shinobis;
@@ -80,6 +90,7 @@ DROP POLICY IF EXISTS "Accès public alertes" ON alertes;
 DROP POLICY IF EXISTS "Accès public avertissements" ON avertissements;
 DROP POLICY IF EXISTS "Accès public config" ON config;
 DROP POLICY IF EXISTS "Accès public messages_gerance" ON messages_gerance;
+DROP POLICY IF EXISTS "Accès public cours" ON cours;
 
 CREATE POLICY "Accès public shinobis" ON shinobis FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public postes" ON postes FOR ALL USING (true) WITH CHECK (true);
@@ -87,6 +98,7 @@ CREATE POLICY "Accès public alertes" ON alertes FOR ALL USING (true) WITH CHECK
 CREATE POLICY "Accès public avertissements" ON avertissements FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public config" ON config FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public messages_gerance" ON messages_gerance FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Accès public cours" ON cours FOR ALL USING (true) WITH CHECK (true);
 
 -- Pour promouvoir quelqu'un en gérant (remplace le nom/prénom) :
 -- UPDATE shinobis SET role = 'gerant' WHERE nom = 'Gaïa' AND prenom = 'Artel';

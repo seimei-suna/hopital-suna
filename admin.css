@@ -163,7 +163,7 @@ tbody tr:hover { background: rgba(196,162,101,.12); }
 .btn-grade.demote { background: var(--red-urgence); color: #fff; }
 
 /* Postes admin */
-.postes-admin-section, .paye-section, .avert-section, .roles-section, .chat-section {
+.postes-admin-section, .paye-section, .avert-section, .roles-section, .chat-section, .cours-admin-section {
   background: rgba(250,243,227,.8);
   backdrop-filter: blur(6px);
   border-radius: 12px; padding: 24px;

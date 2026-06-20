@@ -170,7 +170,7 @@ document.getElementById('paye-period').addEventListener('change', loadPaye);
 // --- Load all ---
 async function loadAll() {
   await refreshShinobis();
-  await Promise.all([loadStats(), loadRecap(), loadDetail(), loadGrades(), loadRoles(), loadPostesAdmin(), loadPaye(), loadAvertissements(), loadChat()]);
+  await Promise.all([loadStats(), loadRecap(), loadDetail(), loadGrades(), loadRoles(), loadPostesAdmin(), loadPaye(), loadAvertissements(), loadChat(), loadCoursAdmin()]);
 }
 
 // --- Stats ---
@@ -608,6 +608,64 @@ async function loadAvertissements() {
         try {
           await supaPatch('avertissements', `id=eq.${btn.dataset.id}`, { actif: false });
           await loadAvertissements();
+        } catch (e) { console.error(e); btn.disabled = false; }
+      });
+    });
+  } catch (e) { console.error(e); }
+}
+
+// =====================
+// GESTION DES COURS
+// =====================
+async function loadCoursAdmin() {
+  try {
+    const cours = await supaGet('cours', 'select=id,titre,description,created_at,shinobi_id&order=created_at.desc&limit=300');
+
+    // Compteur par personne
+    const counts = {};
+    cours.forEach(c => { counts[c.shinobi_id] = (counts[c.shinobi_id] || 0) + 1; });
+
+    const cb = document.getElementById('cours-count-body');
+    cb.innerHTML = '';
+    const entries = allShinobis.map(s => ({ s, n: counts[s.id] || 0 })).sort((a, b) => b.n - a.n);
+    if (entries.length === 0) {
+      cb.innerHTML = '<tr><td colspan="2" class="empty-row">Aucun shinobi inscrit</td></tr>';
+    } else {
+      entries.forEach(({ s, n }) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td><td>${n}</td>`;
+        cb.appendChild(tr);
+      });
+    }
+
+    // Historique complet
+    const lb = document.getElementById('cours-list-body');
+    lb.innerHTML = '';
+    if (cours.length === 0) {
+      lb.innerHTML = '<tr><td colspan="4" class="empty-row">Aucun cours enregistré</td></tr>';
+      return;
+    }
+    cours.forEach(c => {
+      const s = shinobiMap[c.shinobi_id];
+      const nom = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
+      const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${esc(c.titre)}</strong>${c.description ? `<br><span style="font-size:12px;color:var(--text-light)">${esc(c.description)}</span>` : ''}</td>
+        <td>${esc(nom)}</td>
+        <td>${date}</td>
+        <td><button class="btn-poste-delete" data-id="${c.id}">Supprimer</button></td>
+      `;
+      lb.appendChild(tr);
+    });
+
+    lb.querySelectorAll('.btn-poste-delete').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Supprimer définitivement ce cours ?')) return;
+        btn.disabled = true;
+        try {
+          await supaDelete('cours', `id=eq.${btn.dataset.id}`);
+          await loadCoursAdmin();
         } catch (e) { console.error(e); btn.disabled = false; }
       });
     });

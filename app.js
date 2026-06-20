@@ -306,8 +306,44 @@ async function loadData() {
     } else {
       alertesContainer.classList.add('hidden');
     }
+
+    // Load cours
+    const cours = await supaGet('cours', 'select=id,titre,description,created_at,shinobi_id&order=created_at.desc&limit=40');
+    const coursList = document.getElementById('cours-list');
+    coursList.innerHTML = '';
+    if (cours.length === 0) {
+      coursList.innerHTML = '<li style="opacity:.5;list-style:none">Aucun cours pour le moment</li>';
+    } else {
+      cours.forEach(c => {
+        const s = shinobiMap[c.shinobi_id];
+        const nom = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
+        const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="cours-item">
+            <div class="cours-titre">${escapeHtml(c.titre)}${c.description ? ` <span class="cours-desc-text">— ${escapeHtml(c.description)}</span>` : ''}</div>
+            <div class="cours-meta">${escapeHtml(nom)} · ${date}</div>
+          </div>`;
+        coursList.appendChild(li);
+      });
+    }
   } catch (e) { console.error('Erreur chargement données:', e); }
 }
+
+// --- Cours ---
+document.getElementById('cours-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!currentUser) return;
+  const titre = document.getElementById('cours-titre').value.trim();
+  const desc = document.getElementById('cours-desc').value.trim();
+  if (!titre) return;
+  try {
+    await supaPost('cours', { shinobi_id: currentUser.id, titre, description: desc || null });
+    document.getElementById('cours-titre').value = '';
+    document.getElementById('cours-desc').value = '';
+    loadData();
+  } catch (err) { console.error(err); alert('Erreur lors de l\'ajout du cours.'); }
+});
 
 function escapeHtml(text) {
   const d = document.createElement('div');
