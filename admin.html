@@ -149,13 +149,15 @@
       <section class="paye-section">
         <h3>&#x1F4B0; Gestion de la Paye</h3>
         <div class="paye-config">
-          <div class="field">
-            <label>Taux horaire (Ryos/h)</label>
-            <div class="inline-input">
-              <input type="number" id="taux-horaire" min="1" value="500">
-              <button id="btn-save-taux" class="btn-primary" style="width:auto;padding:10px 20px">Sauvegarder</button>
-            </div>
+          <p class="info-text">Définis le taux horaire (Ryos/h) pour chaque grade :</p>
+          <div class="taux-grades" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:12px">
+            <div class="field"><label>Stagiaire</label><input type="number" id="taux-stagiaire" min="0" value="0"></div>
+            <div class="field"><label>Aspirant</label><input type="number" id="taux-aspirant" min="0" value="0"></div>
+            <div class="field"><label>Adepte</label><input type="number" id="taux-adepte" min="0" value="0"></div>
+            <div class="field"><label>Expert</label><input type="number" id="taux-expert" min="0" value="0"></div>
+            <div class="field"><label>Sans grade</label><input type="number" id="taux-aucun" min="0" value="0"></div>
           </div>
+          <button id="btn-save-taux" class="btn-primary" style="width:auto;padding:10px 20px">Sauvegarder les taux</button>
         </div>
         <div class="filters" style="margin-bottom:16px">
           <div class="field">

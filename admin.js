@@ -9,7 +9,7 @@ const headers = {
 };
 
 let currentUser = null;
-let tauxHoraire = 500;
+let tauxParGrade = { aucun: 0, stagiaire: 0, aspirant: 0, adepte: 0, expert: 0 };
 let allShinobis = [];
 let shinobiMap = {};
 let chatInterval = null;
@@ -369,22 +369,41 @@ async function loadPostesAdmin() {
 // =====================
 async function loadTauxHoraire() {
   try {
-    const rows = await supaGet('config', 'cle=eq.taux_horaire');
-    if (rows.length > 0) {
-      tauxHoraire = parseInt(rows[0].valeur) || 500;
-      document.getElementById('taux-horaire').value = tauxHoraire;
+    const rows = await supaGet('config', 'select=cle,valeur');
+    rows.forEach(r => {
+      if (r.cle && r.cle.indexOf('taux_') === 0) {
+        const g = r.cle.slice(5);
+        if (g in tauxParGrade) tauxParGrade[g] = parseInt(r.valeur) || 0;
+      }
+    });
+    // Reprise de l'ancien taux global éventuel comme valeur par défaut
+    const ancien = rows.find(r => r.cle === 'taux_horaire');
+    if (ancien) {
+      const v = parseInt(ancien.valeur) || 0;
+      GRADES.forEach(g => { if (tauxParGrade[g] === 0 && g !== 'aucun') tauxParGrade[g] = v; });
     }
+    GRADES.forEach(g => {
+      const el = document.getElementById('taux-' + g);
+      if (el) el.value = tauxParGrade[g];
+    });
   } catch (e) { console.error(e); }
 }
 
 document.getElementById('btn-save-taux').addEventListener('click', async () => {
-  const val = parseInt(document.getElementById('taux-horaire').value);
-  if (!val || val < 1) return;
-  tauxHoraire = val;
+  const btn = document.getElementById('btn-save-taux');
   try {
-    await supaUpsert('config', { cle: 'taux_horaire', valeur: String(val) });
+    for (const g of GRADES) {
+      const el = document.getElementById('taux-' + g);
+      if (!el) continue;
+      const val = Math.max(0, parseInt(el.value) || 0);
+      tauxParGrade[g] = val;
+      await supaUpsert('config', { cle: 'taux_' + g, valeur: String(val) });
+    }
     await loadPaye();
-  } catch (e) { console.error(e); }
+    const old = btn.textContent;
+    btn.textContent = '✓ Sauvegardé';
+    setTimeout(() => { btn.textContent = old; }, 1500);
+  } catch (e) { console.error(e); alert('Erreur lors de la sauvegarde des taux.'); }
 });
 
 async function loadPaye() {
@@ -422,7 +441,8 @@ async function loadPaye() {
     entries.forEach(e => {
       const minutes = totalMinutes(e.postes);
       const heures = Math.floor(minutes / 60);
-      const paye = heures * tauxHoraire;
+      const taux = tauxParGrade[e.grade] || 0;
+      const paye = heures * taux;
       grandTotal += paye;
 
       const gradeLabel = GRADE_LABELS[e.grade] || 'Aucun';
@@ -432,7 +452,7 @@ async function loadPaye() {
         <td><strong>${esc(e.prenom)} ${esc(e.nom)}</strong></td>
         <td><span class="grade-badge ${e.grade}">${gradeLabel}</span></td>
         <td>${formatDuration(minutes)}</td>
-        <td>${tauxHoraire} Ryos</td>
+        <td>${taux} Ryos</td>
         <td class="paye-ryos">${paye.toLocaleString('fr-FR')} Ryos</td>
       `;
       tbody.appendChild(tr);
