@@ -362,3 +362,10 @@ body.dark .acc > summary:hover { background: rgba(150,120,80,.12); }
   .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
   .snav { width: auto; }
 }
+
+/* ===== GROUPES (sidebar) ===== */
+.group-panel { display: none; }
+.group-panel.active { display: block; }
+.snav.active { background: var(--terracotta); color: #fff; }
+.snav.active:hover { background: var(--terracotta); }
+body.dark .snav.active { background: var(--terracotta); color: #fff; }

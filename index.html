@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hôpital de Suna — Centre Médical Shinobi</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=5">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="sand-overlay"></div>
-  <button id="theme-toggle" class="theme-toggle" title="Basculer clair / sombre"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13.5A7.5 7.5 0 1 1 10.5 4 6 6 0 0 0 20 13.5Z"/></svg></button>
+  <button id="theme-toggle" class="theme-toggle" title="Basculer clair / sombre"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13.5A7.5 7.5 0 1 1 10.5 4 6 6 0 0 0 20 13.5Z"/></svg></button>
 
   <!-- LOGIN / REGISTER -->
   <div id="auth-screen" class="screen">
     <div class="auth-container">
-      <div class="hospital-emblem"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
+      <div class="hospital-emblem"><svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
       <h1>Hôpital de Sunagakure</h1>
       <p class="subtitle">Centre Médical Shinobi — Unité de Soin</p>
 
@@ -23,42 +23,19 @@
         <button class="tab" data-tab="register">Enregistrement</button>
       </div>
 
-      <!-- Login -->
       <form id="login-form" class="auth-form">
-        <div class="field">
-          <label>Nom</label>
-          <input type="text" id="login-nom" placeholder="Gaïa" required>
-        </div>
-        <div class="field">
-          <label>Prénom</label>
-          <input type="text" id="login-prenom" placeholder="Artel" required>
-        </div>
-        <div class="field">
-          <label>Sceau Secret</label>
-          <input type="password" id="login-sceau" placeholder="Votre sceau d'identification" required>
-        </div>
+        <div class="field"><label>Nom</label><input type="text" id="login-nom" placeholder="Gaïa" required></div>
+        <div class="field"><label>Prénom</label><input type="text" id="login-prenom" placeholder="Artel" required></div>
+        <div class="field"><label>Sceau Secret</label><input type="password" id="login-sceau" placeholder="Votre sceau d'identification" required></div>
         <button type="submit" class="btn-primary">Entrer dans l'Hôpital</button>
         <p id="login-error" class="error"></p>
       </form>
 
-      <!-- Register -->
       <form id="register-form" class="auth-form hidden">
-        <div class="field">
-          <label>Nom</label>
-          <input type="text" id="reg-nom" placeholder="Gaïa" required>
-        </div>
-        <div class="field">
-          <label>Prénom</label>
-          <input type="text" id="reg-prenom" placeholder="Artel" required>
-        </div>
-        <div class="field">
-          <label>Sceau Secret</label>
-          <input type="password" id="reg-sceau" placeholder="Choisissez votre sceau" required>
-        </div>
-        <div class="field">
-          <label>Confirmer le Sceau</label>
-          <input type="password" id="reg-sceau2" placeholder="Confirmez votre sceau" required>
-        </div>
+        <div class="field"><label>Nom</label><input type="text" id="reg-nom" placeholder="Gaïa" required></div>
+        <div class="field"><label>Prénom</label><input type="text" id="reg-prenom" placeholder="Artel" required></div>
+        <div class="field"><label>Sceau Secret</label><input type="password" id="reg-sceau" placeholder="Choisissez votre sceau" required></div>
+        <div class="field"><label>Confirmer le Sceau</label><input type="password" id="reg-sceau2" placeholder="Confirmez votre sceau" required></div>
         <button type="submit" class="btn-primary">S'enregistrer au Centre</button>
         <p id="reg-error" class="error"></p>
         <p id="reg-success" class="success"></p>
@@ -68,80 +45,92 @@
 
   <!-- DASHBOARD -->
   <div id="dashboard-screen" class="screen hidden">
-    <header>
-      <div class="header-left">
-        <span class="hospital-emblem-sm"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>
-        <h2>Hôpital de Sunagakure</h2>
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>
+          <span class="brand-txt">Hôpital<small>Sunagakure</small></span>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="snav active" data-group="poste"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg> Mon Poste</button>
+          <button class="snav" data-group="alertes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg> Alertes</button>
+          <button class="snav" data-group="cours"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18"/></svg> Cours</button>
+        </nav>
+        <div class="sidebar-foot">
+          <div class="sidebar-user"><span id="user-name"></span></div>
+          <a href="admin.html" class="sidebar-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 5.7v5.1c0 4.2 3 7.3 7 8.7 4-1.4 7-4.5 7-8.7V5.7L12 3Z"/></svg> Gérance</a>
+          <button id="logout-btn" class="sidebar-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></svg> Quitter le poste</button>
+        </div>
+      </aside>
+
+      <div class="admin-content">
+        <main>
+          <section class="status-section">
+            <div id="server-status" class="status-card">
+              <div class="status-indicator offline"></div>
+              <span>Le village est endormi — Hors horaires de service</span>
+            </div>
+            <div class="clock" id="clock"></div>
+          </section>
+
+          <!-- GROUPE POSTE -->
+          <div class="group-panel active" data-group="poste">
+            <section class="poste-section">
+              <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg> Prise de Poste</h3>
+              <p class="info-text">Les portes de l'hôpital sont ouvertes de <strong>18h30</strong> à <strong>3h00</strong>.</p>
+              <div class="poste-controls">
+                <button id="btn-poste" class="btn-poste" disabled>Prendre son poste</button>
+                <span id="poste-status" class="poste-badge">Hors service</span>
+              </div>
+              <div id="poste-list" class="poste-list">
+                <h4>Personnel en poste actuellement</h4>
+                <ul id="personnel-list"></ul>
+              </div>
+            </section>
+          </div>
+
+          <!-- GROUPE ALERTES -->
+          <div class="group-panel" data-group="alertes">
+            <section class="alertes-section">
+              <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg> Alertes Médicales</h3>
+              <div class="alerte-buttons">
+                <button id="btn-urgence" class="btn-alerte urgence" disabled>
+                  <span class="alerte-icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.4" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+                  <span class="alerte-title">Appel d'Urgence</span>
+                  <span class="alerte-desc">Demander des renforts médicaux immédiats</span>
+                </button>
+                <button id="btn-chirurgien" class="btn-alerte chirurgien" disabled>
+                  <span class="alerte-icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><path d="M8 7.2 20 17M8 16.8 20 7"/></svg></span>
+                  <span class="alerte-title">Demande de Chirurgien</span>
+                  <span class="alerte-desc">Requérir un spécialiste en chirurgie</span>
+                </button>
+              </div>
+              <div id="alertes-actives" class="alertes-list hidden">
+                <h4>Alertes en cours</h4>
+                <ul id="alertes-list"></ul>
+              </div>
+            </section>
+          </div>
+
+          <!-- GROUPE COURS -->
+          <div class="group-panel" data-group="cours">
+            <section class="cours-section">
+              <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18"/></svg> Cours de la Section</h3>
+              <p class="info-text">Note ici les cours que tu donnes aux membres de la Seimei.</p>
+              <form id="cours-form" class="cours-form">
+                <input type="text" id="cours-titre" placeholder="Sujet du cours (ex. Suture avancée)" maxlength="120" required>
+                <textarea id="cours-desc" placeholder="Détails (optionnel)" rows="2"></textarea>
+                <button type="submit" class="btn-primary">Ajouter le cours</button>
+              </form>
+              <div class="cours-list">
+                <h4>Cours récents</h4>
+                <ul id="cours-list"></ul>
+              </div>
+            </section>
+          </div>
+        </main>
       </div>
-      <div class="header-right">
-        <span id="user-name"></span>
-        <a href="admin.html" class="btn-sm">Gérance</a>
-        <button id="logout-btn" class="btn-sm">Quitter le poste</button>
-      </div>
-    </header>
-
-    <main>
-      <!-- Status -->
-      <section class="status-section">
-        <div id="server-status" class="status-card">
-          <div class="status-indicator offline"></div>
-          <span>Le village est endormi — Hors horaires de service</span>
-        </div>
-        <div class="clock" id="clock"></div>
-      </section>
-
-      <!-- Poste -->
-      <section class="poste-section">
-        <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg> Prise de Poste</h3>
-        <p class="info-text">Les portes de l'hôpital sont ouvertes de <strong>18h30</strong> à <strong>3h00</strong>.</p>
-        <div class="poste-controls">
-          <button id="btn-poste" class="btn-poste" disabled>Prendre son poste</button>
-          <span id="poste-status" class="poste-badge">Hors service</span>
-        </div>
-        <div id="poste-list" class="poste-list">
-          <h4>Personnel en poste actuellement</h4>
-          <ul id="personnel-list"></ul>
-        </div>
-      </section>
-
-      <!-- Alertes -->
-      <section class="alertes-section">
-        <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg> Alertes Médicales</h3>
-        <div class="alerte-buttons">
-          <button id="btn-urgence" class="btn-alerte urgence" disabled>
-            <span class="alerte-icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.4" r="0.6" fill="currentColor" stroke="none"/></svg></span>
-            <span class="alerte-title">Appel d'Urgence</span>
-            <span class="alerte-desc">Demander des renforts médicaux immédiats</span>
-          </button>
-          <button id="btn-chirurgien" class="btn-alerte chirurgien" disabled>
-            <span class="alerte-icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><path d="M8 7.2 20 17M8 16.8 20 7"/></svg></span>
-            <span class="alerte-title">Demande de Chirurgien</span>
-            <span class="alerte-desc">Requérir un spécialiste en chirurgie</span>
-          </button>
-        </div>
-
-        <!-- Active alerts -->
-        <div id="alertes-actives" class="alertes-list hidden">
-          <h4>Alertes en cours</h4>
-          <ul id="alertes-list"></ul>
-        </div>
-      </section>
-
-      <!-- Cours -->
-      <section class="cours-section">
-        <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18"/></svg> Cours de la Section</h3>
-        <p class="info-text">Note ici les cours que tu donnes aux membres de la Seimei.</p>
-        <form id="cours-form" class="cours-form">
-          <input type="text" id="cours-titre" placeholder="Sujet du cours (ex. Suture avancée)" maxlength="120" required>
-          <textarea id="cours-desc" placeholder="Détails (optionnel)" rows="2"></textarea>
-          <button type="submit" class="btn-primary">Ajouter le cours</button>
-        </form>
-        <div class="cours-list">
-          <h4>Cours récents</h4>
-          <ul id="cours-list"></ul>
-        </div>
-      </section>
-    </main>
+    </div>
   </div>
 
   <!-- Alert Modal -->
@@ -156,6 +145,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

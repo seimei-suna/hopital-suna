@@ -120,21 +120,22 @@ async function showAdmin() {
   populateShinobiSelects();
   await loadAll();
 
+  showGroup('presence');
+
   // Rafraîchissement du chat toutes les 5 s
   if (chatInterval) clearInterval(chatInterval);
   chatInterval = setInterval(loadChat, 5000);
 }
 
 // =====================
-// NAVIGATION SIDEBAR (ouvre l'accordéon ciblé)
+// NAVIGATION SIDEBAR (groupes)
 // =====================
+function showGroup(name) {
+  document.querySelectorAll('.group-panel').forEach(p => p.classList.toggle('active', p.dataset.group === name));
+  document.querySelectorAll('.snav').forEach(b => b.classList.toggle('active', b.dataset.group === name));
+}
 document.querySelectorAll('.snav').forEach(b => {
-  b.addEventListener('click', () => {
-    const acc = document.getElementById(b.dataset.acc);
-    if (!acc) return;
-    acc.open = true;
-    acc.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  b.addEventListener('click', () => showGroup(b.dataset.group));
 });
 
 // --- Populate selects ---

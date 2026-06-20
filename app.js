@@ -165,8 +165,18 @@ function showDashboard() {
   document.getElementById('user-name').textContent = `${currentUser.prenom} ${currentUser.nom}`;
   checkExistingPoste();
   loadData();
+  showGroup('poste');
   refreshInterval = setInterval(loadData, 10000);
 }
+
+// --- Navigation sidebar (groupes) ---
+function showGroup(name) {
+  document.querySelectorAll('.group-panel').forEach(p => p.classList.toggle('active', p.dataset.group === name));
+  document.querySelectorAll('.snav').forEach(b => b.classList.toggle('active', b.dataset.group === name));
+}
+document.querySelectorAll('.snav').forEach(b => {
+  b.addEventListener('click', () => showGroup(b.dataset.group));
+});
 
 document.getElementById('logout-btn').addEventListener('click', () => {
   if (enPoste) quitterPoste();
