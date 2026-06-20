@@ -322,3 +322,43 @@ body.dark .admin-sidebar { background: rgba(18,12,6,.97); border-right-color: #4
   .sidebar-foot { flex-direction: row; flex-wrap: wrap; align-items: center; }
   .sidebar-user { flex-direction: row; }
 }
+
+/* ===== ACCORDÉONS ===== */
+.acc {
+  background: rgba(250,243,227,.8); border: 1px solid var(--sand-dark);
+  border-radius: 12px; margin-bottom: 14px; overflow: hidden;
+  box-shadow: 0 4px 16px rgba(92,61,46,.08);
+}
+.acc > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: .55em;
+  padding: 16px 20px; font-family: 'Cinzel', serif; font-weight: 700; font-size: 18px;
+  color: var(--brown-dark); user-select: none;
+}
+.acc > summary::-webkit-details-marker { display: none; }
+.acc > summary svg { width: 22px; height: 22px; flex-shrink: 0; }
+.acc > summary > span:first-of-type { flex: 1; }
+.acc > summary:hover { background: rgba(196,162,101,.12); }
+.acc-chevron { width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform .2s; opacity: .55; }
+.acc[open] > summary .acc-chevron { transform: rotate(45deg); }
+.acc-body { padding: 0 20px 22px; }
+
+/* ===== NAV SIDEBAR (accordéons) ===== */
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.snav {
+  display: inline-flex; align-items: center; gap: .55em; width: 100%; justify-content: flex-start;
+  padding: 10px 14px; border: 1px solid transparent; border-radius: 8px; background: transparent;
+  color: rgba(250,243,227,.85); font-family: inherit; font-size: 13.5px; cursor: pointer;
+  transition: all .2s; text-align: left;
+}
+.snav:hover { background: rgba(255,255,255,.09); }
+.snav svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* dark mode accordéons */
+body.dark .acc { background: rgba(40,30,18,.92); border-color: #4a3a28; }
+body.dark .acc > summary { color: #f3e8d0; }
+body.dark .acc > summary:hover { background: rgba(150,120,80,.12); }
+
+@media (max-width: 760px) {
+  .sidebar-nav { flex-direction: row; flex-wrap: wrap; }
+  .snav { width: auto; }
+}

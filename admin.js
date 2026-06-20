@@ -120,26 +120,21 @@ async function showAdmin() {
   populateShinobiSelects();
   await loadAll();
 
-  showTab('presence');
-
   // Rafraîchissement du chat toutes les 5 s
   if (chatInterval) clearInterval(chatInterval);
   chatInterval = setInterval(loadChat, 5000);
 }
 
 // =====================
-// ONGLETS
+// NAVIGATION SIDEBAR (ouvre l'accordéon ciblé)
 // =====================
-function showTab(name) {
-  document.querySelectorAll('main section[data-tab]').forEach(s => {
-    s.style.display = (s.dataset.tab === name) ? 'block' : 'none';
+document.querySelectorAll('.snav').forEach(b => {
+  b.addEventListener('click', () => {
+    const acc = document.getElementById(b.dataset.acc);
+    if (!acc) return;
+    acc.open = true;
+    acc.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
-  document.querySelectorAll('.admin-tab').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === name);
-  });
-}
-document.querySelectorAll('.admin-tab').forEach(b => {
-  b.addEventListener('click', () => showTab(b.dataset.tab));
 });
 
 // --- Populate selects ---
