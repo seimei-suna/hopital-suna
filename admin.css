@@ -255,3 +255,22 @@ body.dark .chat-messages { background: rgba(0,0,0,.28); border-color: #4a3a28; }
 body.dark .chat-msg.theirs { background: #2a2014; border-color: #4a3a28; color: #ece3d2; }
 body.dark .btn-role.membre { background: rgba(255,255,255,.12); color: #ece3d2; }
 body.dark .back-link { color: #b9a684; }
+
+/* ===== ONGLETS ADMIN ===== */
+main section[data-tab] { display: none; }
+.admin-tabs {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+}
+.admin-tab {
+  display: inline-flex; align-items: center; gap: .45em;
+  padding: 10px 18px; border: 1px solid var(--sand-dark); border-radius: 10px;
+  background: rgba(250,243,227,.6); color: var(--brown-dark);
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 13px;
+  cursor: pointer; transition: all .2s;
+}
+.admin-tab svg { width: 1.05em; height: 1.05em; }
+.admin-tab:hover { background: rgba(196,162,101,.3); }
+.admin-tab.active { background: var(--brown-dark); color: var(--cream); border-color: var(--brown-dark); }
+body.dark .admin-tab { background: rgba(40,30,18,.7); color: #ece3d2; border-color: #4a3a28; }
+body.dark .admin-tab:hover { background: rgba(150,120,80,.25); }
+body.dark .admin-tab.active { background: #0e0904; color: #f3e8d0; border-color: #0e0904; }
