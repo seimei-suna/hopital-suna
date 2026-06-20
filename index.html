@@ -9,12 +9,12 @@
 </head>
 <body>
   <div class="sand-overlay"></div>
-  <button id="theme-toggle" class="theme-toggle" title="Basculer clair / sombre">🌙</button>
+  <button id="theme-toggle" class="theme-toggle" title="Basculer clair / sombre"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13.5A7.5 7.5 0 1 1 10.5 4 6 6 0 0 0 20 13.5Z"/></svg></button>
 
   <!-- LOGIN / REGISTER -->
   <div id="auth-screen" class="screen">
     <div class="auth-container">
-      <div class="hospital-emblem">&#x2695;</div>
+      <div class="hospital-emblem"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
       <h1>Hôpital de Sunagakure</h1>
       <p class="subtitle">Centre Médical Shinobi — Unité de Soin</p>
 
@@ -70,7 +70,7 @@
   <div id="dashboard-screen" class="screen hidden">
     <header>
       <div class="header-left">
-        <span class="hospital-emblem-sm">&#x2695;</span>
+        <span class="hospital-emblem-sm"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></span>
         <h2>Hôpital de Sunagakure</h2>
       </div>
       <div class="header-right">
@@ -92,7 +92,7 @@
 
       <!-- Poste -->
       <section class="poste-section">
-        <h3>&#x1f3e5; Prise de Poste</h3>
+        <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg> Prise de Poste</h3>
         <p class="info-text">Les portes de l'hôpital sont ouvertes de <strong>18h30</strong> à <strong>3h00</strong>.</p>
         <div class="poste-controls">
           <button id="btn-poste" class="btn-poste" disabled>Prendre son poste</button>
@@ -106,15 +106,15 @@
 
       <!-- Alertes -->
       <section class="alertes-section">
-        <h3>&#x1f6a8; Alertes Médicales</h3>
+        <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg> Alertes Médicales</h3>
         <div class="alerte-buttons">
           <button id="btn-urgence" class="btn-alerte urgence" disabled>
-            <span class="alerte-icon">&#x26A0;</span>
+            <span class="alerte-icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.4" r="0.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="alerte-title">Appel d'Urgence</span>
             <span class="alerte-desc">Demander des renforts médicaux immédiats</span>
           </button>
           <button id="btn-chirurgien" class="btn-alerte chirurgien" disabled>
-            <span class="alerte-icon">&#x2702;</span>
+            <span class="alerte-icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><path d="M8 7.2 20 17M8 16.8 20 7"/></svg></span>
             <span class="alerte-title">Demande de Chirurgien</span>
             <span class="alerte-desc">Requérir un spécialiste en chirurgie</span>
           </button>
@@ -129,7 +129,7 @@
 
       <!-- Cours -->
       <section class="cours-section">
-        <h3>&#x1F4DA; Cours de la Section</h3>
+        <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18"/></svg> Cours de la Section</h3>
         <p class="info-text">Note ici les cours que tu donnes aux membres de la Seimei.</p>
         <form id="cours-form" class="cours-form">
           <input type="text" id="cours-titre" placeholder="Sujet du cours (ex. Suture avancée)" maxlength="120" required>

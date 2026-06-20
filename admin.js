@@ -8,6 +8,10 @@ const headers = {
   'Prefer': 'return=representation'
 };
 
+const _S = 'class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+const ICO_SUN = `<svg ${_S}><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"/></svg>`;
+const ICO_MOON = `<svg ${_S}><path d="M20 13.5A7.5 7.5 0 1 1 10.5 4 6 6 0 0 0 20 13.5Z"/></svg>`;
+
 let currentUser = null;
 let tauxParGrade = { aucun: 0, stagiaire: 0, aspirant: 0, adepte: 0, expert: 0 };
 let allShinobis = [];
@@ -791,7 +795,7 @@ if (localStorage.getItem('hopital_theme') === 'dark') document.body.classList.ad
 (function () {
   const tbtn = document.getElementById('theme-toggle');
   if (!tbtn) return;
-  const sync = () => { tbtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; };
+  const sync = () => { tbtn.innerHTML = document.body.classList.contains('dark') ? ICO_SUN : ICO_MOON; };
   sync();
   tbtn.addEventListener('click', () => {
     document.body.classList.toggle('dark');

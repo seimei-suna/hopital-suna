@@ -8,6 +8,13 @@ const headers = {
   'Prefer': 'return=representation'
 };
 
+// --- Icônes SVG ---
+const _S = 'class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+const ICO_WARN = `<svg ${_S}><path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.4" r="0.6" fill="currentColor" stroke="none"/></svg>`;
+const ICO_SCISSORS = `<svg ${_S}><circle cx="6" cy="6" r="2.2"/><circle cx="6" cy="18" r="2.2"/><path d="M8 7.2 20 17M8 16.8 20 7"/></svg>`;
+const ICO_SUN = `<svg ${_S}><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"/></svg>`;
+const ICO_MOON = `<svg ${_S}><path d="M20 13.5A7.5 7.5 0 1 1 10.5 4 6 6 0 0 0 20 13.5Z"/></svg>`;
+
 let currentUser = null;
 let enPoste = false;
 let posteId = null;
@@ -295,7 +302,7 @@ async function loadData() {
         const time = new Date(a.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         li.innerHTML = `
           <div class="alerte-info">
-            <div class="alerte-auteur">${a.type === 'urgence' ? '⚠️ Urgence' : '✂️ Chirurgien'} — ${s.prenom} ${s.nom}</div>
+            <div class="alerte-auteur">${a.type === 'urgence' ? ICO_WARN + ' Urgence' : ICO_SCISSORS + ' Chirurgien'} — ${s.prenom} ${s.nom}</div>
             ${a.message ? `<div class="alerte-msg">${escapeHtml(a.message)}</div>` : ''}
           </div>
           <span class="alerte-time">${time}</span>
@@ -359,8 +366,8 @@ document.getElementById('btn-chirurgien').addEventListener('click', () => openAl
 
 function openAlertModal(type) {
   pendingAlertType = type;
-  document.getElementById('modal-title').textContent =
-    type === 'urgence' ? '⚠️ Appel d\'Urgence — Renforts Médicaux' : '✂️ Demande de Chirurgien';
+  document.getElementById('modal-title').innerHTML =
+    type === 'urgence' ? ICO_WARN + ' Appel d\'Urgence — Renforts Médicaux' : ICO_SCISSORS + ' Demande de Chirurgien';
   document.getElementById('modal-message').value = '';
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
@@ -452,7 +459,7 @@ if (localStorage.getItem('hopital_theme') === 'dark') document.body.classList.ad
 (function () {
   const tbtn = document.getElementById('theme-toggle');
   if (!tbtn) return;
-  const sync = () => { tbtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙'; };
+  const sync = () => { tbtn.innerHTML = document.body.classList.contains('dark') ? ICO_SUN : ICO_MOON; };
   sync();
   tbtn.addEventListener('click', () => {
     document.body.classList.toggle('dark');

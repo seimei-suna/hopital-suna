@@ -360,3 +360,10 @@ body.dark .poste-list li, body.dark .cours-list li { border-bottom-color: rgba(1
 body.dark .cours-titre { color: #f3e8d0; }
 body.dark .btn-sm { border-color: rgba(255,255,255,.22); }
 body.dark .poste-badge:not(.actif) { background: rgba(255,255,255,.08); color: #b9a684; }
+
+/* ===== ICÔNES SVG ===== */
+.ico { width: 1em; height: 1em; vertical-align: -0.14em; margin-right: .45em; flex-shrink: 0; }
+.hospital-emblem svg { width: 70px; height: 70px; margin: 0; vertical-align: middle; }
+.hospital-emblem-sm svg { width: 26px; height: 26px; margin: 0; vertical-align: -0.32em; }
+.alerte-icon svg { width: 38px; height: 38px; margin: 0 0 8px 0; }
+.theme-toggle svg { width: 20px; height: 20px; margin: 0; vertical-align: -0.25em; }
