@@ -288,8 +288,17 @@ async function loadData() {
     const alertesContainer = document.getElementById('alertes-actives');
     alertesList.innerHTML = '';
 
-    // Jouer un son pour les nouvelles alertes
-    alertes.forEach(a => {
+    const now = Date.now();
+    const EXPIRE_MS = 20 * 60 * 1000;
+    const expiredIds = [];
+    const activeAlertes = alertes.filter(a => {
+      if (now - new Date(a.created_at).getTime() > EXPIRE_MS) { expiredIds.push(a.id); return false; }
+      return true;
+    });
+    expiredIds.forEach(id => { supaPatch('alertes', `id=eq.${id}`, { actif: false }).catch(() => {}); });
+
+    // Jouer un son pour les nouvelles alertes (seulement celles non expirées)
+    activeAlertes.forEach(a => {
       if (!alertesConnues.has(a.id)) {
         alertesConnues.add(a.id);
         if (a.type === 'urgence') {
@@ -302,21 +311,24 @@ async function loadData() {
       }
     });
 
-    if (alertes.length > 0) {
+    const isGerant = currentUser && (currentUser.role === 'gerant' || currentUser.role === 'co_gerant');
+    if (activeAlertes.length > 0) {
       alertesContainer.classList.remove('hidden');
-      alertes.forEach(a => {
+      activeAlertes.forEach(a => {
         const s = shinobiMap[a.shinobi_id];
         if (!s) return;
         const li = document.createElement('li');
         li.className = a.type === 'urgence' ? 'urgence-item' : 'chirurgien-item';
         const time = new Date(a.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const canResolve = currentUser && s.id === currentUser.id;
         li.innerHTML = `
           <div class="alerte-info">
             <div class="alerte-auteur">${a.type === 'urgence' ? ICO_WARN + ' Urgence' : ICO_SCISSORS + ' Chirurgien'} — ${s.prenom} ${s.nom}</div>
             ${a.message ? `<div class="alerte-msg">${escapeHtml(a.message)}</div>` : ''}
           </div>
           <span class="alerte-time">${time}</span>
-          ${(currentUser && s.id === currentUser.id) ? `<button class="btn-resolve" onclick="resolveAlerte('${a.id}')">Résoudre</button>` : ''}
+          ${canResolve ? `<button class="btn-resolve" onclick="resolveAlerte('${a.id}')">Résoudre</button>` : ''}
+          ${isGerant && !canResolve ? `<button class="btn-resolve" style="background:#8a4f1a;" onclick="resolveAlerte('${a.id}')">Supprimer</button>` : ''}
         `;
         alertesList.appendChild(li);
       });
