@@ -482,8 +482,8 @@ async function loadPaye() {
 // =====================
 // GRADES
 // =====================
-const GRADES = ['stagiaire', 'aspirant', 'adepte', 'expert'];
-const GRADE_LABELS = { stagiaire: 'Stagiaire', aspirant: 'Aspirant', adepte: 'Adepte', expert: 'Expert' };
+const GRADES = ['observateur', 'stagiaire', 'aspirant', 'adepte', 'expert'];
+const GRADE_LABELS = { observateur: 'Observateur', stagiaire: 'Stagiaire', aspirant: 'Aspirant', adepte: 'Adepte', expert: 'Expert' };
 
 function nextGrade(current) {
   const i = GRADES.indexOf(current || 'aucun');
@@ -496,7 +496,7 @@ function prevGrade(current) {
 }
 
 let gradeSortDir = 1;
-const GRADE_ORDER = { observateur: -1, stagiaire: 0, aspirant: 1, adepte: 2, expert: 3 };
+const GRADE_ORDER = { observateur: 0, stagiaire: 1, aspirant: 2, adepte: 3, expert: 4 };
 
 async function loadGrades() {
   const tbody = document.getElementById('grades-body');
@@ -508,44 +508,35 @@ async function loadGrades() {
   }
 
   const sorted = allShinobis.slice().sort((a, b) => {
-    const ga = a.role === 'observateur' ? 'observateur' : (a.grade || 'stagiaire');
-    const gb = b.role === 'observateur' ? 'observateur' : (b.grade || 'stagiaire');
-    const diff = ((GRADE_ORDER[ga] != null ? GRADE_ORDER[ga] : -1) - (GRADE_ORDER[gb] != null ? GRADE_ORDER[gb] : -1)) * gradeSortDir;
+    const ga = a.grade || 'stagiaire';
+    const gb = b.grade || 'stagiaire';
+    const diff = ((GRADE_ORDER[ga] != null ? GRADE_ORDER[ga] : 0) - (GRADE_ORDER[gb] != null ? GRADE_ORDER[gb] : 0)) * gradeSortDir;
     return diff !== 0 ? diff : (a.nom + a.prenom).localeCompare(b.nom + b.prenom);
   });
 
   sorted.forEach(s => {
-    const isObs = s.role === 'observateur';
-    const grade = isObs ? 'observateur' : (s.grade || 'stagiaire');
+    const grade = s.grade || 'stagiaire';
     const roleLabel = ROLE_LABELS[s.role] || 'Membre';
-    const next = isObs ? null : nextGrade(grade);
-    const prev = isObs ? null : prevGrade(grade);
+    const next = nextGrade(grade);
+    const prev = prevGrade(grade);
 
     const tr = document.createElement('tr');
-    if (isObs) {
-      tr.innerHTML = `
-        <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
-        <td><span class="role-badge observateur">Observateur</span></td>
-        <td><span class="grade-badge" style="opacity:.5">—</span></td>
-        <td><button class="btn-delete-obs-grade" data-id="${s.id}" data-nom="${esc(s.prenom)} ${esc(s.nom)}">Supprimer</button></td>
-      `;
-    } else {
-      tr.innerHTML = `
-        <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
-        <td>${roleLabel}</td>
-        <td><span class="grade-badge ${grade}">${GRADE_LABELS[grade] || grade}</span></td>
-        <td>
-          ${prev ? `<button class="btn-grade demote" data-id="${s.id}" data-grade="${prev}">↓ ${GRADE_LABELS[prev]}</button>` : ''}
-          ${next ? `<button class="btn-grade promote" data-id="${s.id}" data-grade="${next}">↑ ${GRADE_LABELS[next]}</button>` : '<span style="opacity:.4;font-size:12px">Grade maximum</span>'}
-        </td>
-      `;
-    }
+    tr.innerHTML = `
+      <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
+      <td>${roleLabel}</td>
+      <td><span class="grade-badge ${grade}">${GRADE_LABELS[grade] || grade}</span></td>
+      <td>
+        ${prev ? `<button class="btn-grade demote" data-id="${s.id}" data-grade="${prev}">↓ ${GRADE_LABELS[prev]}</button>` : ''}
+        ${next ? `<button class="btn-grade promote" data-id="${s.id}" data-grade="${next}">↑ ${GRADE_LABELS[next]}</button>` : '<span style="opacity:.4;font-size:12px">Grade max</span>'}
+        <button class="btn-licencier" data-id="${s.id}" data-nom="${esc(s.prenom)} ${esc(s.nom)}">Licencier</button>
+      </td>
+    `;
     tbody.appendChild(tr);
   });
 
-  tbody.querySelectorAll('.btn-delete-obs-grade').forEach(btn => {
+  tbody.querySelectorAll('.btn-licencier').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Supprimer l\'observateur ' + btn.dataset.nom + ' du registre ?')) return;
+      if (!confirm('Licencier ' + btn.dataset.nom + ' ? Son profil sera supprimé du registre.')) return;
       btn.disabled = true;
       try {
         await supaDelete('shinobis', `id=eq.${btn.dataset.id}`);
@@ -562,10 +553,7 @@ async function loadGrades() {
       try {
         await supaPatch('shinobis', `id=eq.${id}`, { grade });
         await loadAll();
-      } catch (e) {
-        console.error(e);
-        btn.disabled = false;
-      }
+      } catch (e) { console.error(e); btn.disabled = false; }
     });
   });
 }
@@ -578,7 +566,7 @@ document.getElementById('th-grade').addEventListener('click', () => {
 // =====================
 // GESTION DES RÔLES
 // =====================
-const ROLE_LABELS = { gerant: 'Gérant', co_gerant: 'Co-Gérant', membre: 'Membre', observateur: 'Observateur' };
+const ROLE_LABELS = { gerant: 'Gérant', co_gerant: 'Co-Gérant', membre: 'Membre' };
 
 async function loadRoles() {
   const tbody = document.getElementById('roles-body');
@@ -595,24 +583,12 @@ async function loadRoles() {
       `<button class="btn-role ${r}" data-id="${s.id}" data-role="${r}"${role === r ? ' disabled' : ''}>${ROLE_LABELS[r]}</button>`;
 
     const tr = document.createElement('tr');
-    const isObs = role === 'observateur';
     tr.innerHTML = `
       <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
       <td><span class="role-badge ${role}">${ROLE_LABELS[role] || role}</span></td>
-      <td>${isObs ? `<button class="btn-delete-obs" data-id="${s.id}" data-nom="${esc(s.prenom)} ${esc(s.nom)}">Supprimer</button>` : btn('gerant') + btn('co_gerant') + btn('membre')}</td>
+      <td>${btn('gerant') + btn('co_gerant') + btn('membre')}</td>
     `;
     tbody.appendChild(tr);
-  });
-
-  tbody.querySelectorAll('.btn-delete-obs').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      if (!confirm('Supprimer l\'observateur ' + btn.dataset.nom + ' du registre ?')) return;
-      btn.disabled = true;
-      try {
-        await supaDelete('shinobis', `id=eq.${btn.dataset.id}`);
-        await loadAll();
-      } catch (e) { console.error(e); btn.disabled = false; }
-    });
   });
 
   tbody.querySelectorAll('.btn-role').forEach(btn => {
@@ -820,7 +796,7 @@ document.getElementById('btn-add-obs').addEventListener('click', async () => {
   }
 
   try {
-    await supaPost('shinobis', { prenom, nom, role: 'observateur', sceau: '' });
+    await supaPost('shinobis', { prenom, nom, role: 'membre', grade: 'observateur', sceau: '' });
     document.getElementById('obs-prenom').value = '';
     document.getElementById('obs-nom').value = '';
     msg.innerHTML = '<span style="color:var(--success)">' + esc(prenom) + ' ' + esc(nom) + ' ajouté au registre.</span>';

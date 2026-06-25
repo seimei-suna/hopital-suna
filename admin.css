@@ -152,6 +152,15 @@ tbody tr:hover { background: rgba(196,162,101,.12); }
 .btn-poste-delete:hover { background: var(--red-urgence); color: #fff; }
 .btn-poste-delete:disabled { opacity: .4; cursor: not-allowed; }
 
+.btn-licencier {
+  padding: 5px 12px; border: 1px solid var(--red-urgence); border-radius: 6px;
+  background: transparent; color: var(--red-urgence);
+  font-family: inherit; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all .2s; margin-left: 6px;
+}
+.btn-licencier:hover { background: var(--red-urgence); color: #fff; }
+.btn-licencier:disabled { opacity: .4; cursor: not-allowed; }
+
 .btn-grade {
   padding: 6px 14px; border: none; border-radius: 6px;
   font-family: inherit; font-size: 12px; font-weight: 700;
