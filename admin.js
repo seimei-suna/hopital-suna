@@ -495,6 +495,9 @@ function prevGrade(current) {
   return i > 0 ? GRADES[i - 1] : null;
 }
 
+let gradeSortDir = 1;
+const GRADE_ORDER = { observateur: -1, stagiaire: 0, aspirant: 1, adepte: 2, expert: 3 };
+
 async function loadGrades() {
   const tbody = document.getElementById('grades-body');
   tbody.innerHTML = '';
@@ -504,23 +507,51 @@ async function loadGrades() {
     return;
   }
 
-  allShinobis.filter(s => s.role !== 'observateur').forEach(s => {
-    const grade = s.grade || 'stagiaire';
+  const sorted = allShinobis.slice().sort((a, b) => {
+    const ga = a.role === 'observateur' ? 'observateur' : (a.grade || 'stagiaire');
+    const gb = b.role === 'observateur' ? 'observateur' : (b.grade || 'stagiaire');
+    const diff = ((GRADE_ORDER[ga] != null ? GRADE_ORDER[ga] : -1) - (GRADE_ORDER[gb] != null ? GRADE_ORDER[gb] : -1)) * gradeSortDir;
+    return diff !== 0 ? diff : (a.nom + a.prenom).localeCompare(b.nom + b.prenom);
+  });
+
+  sorted.forEach(s => {
+    const isObs = s.role === 'observateur';
+    const grade = isObs ? 'observateur' : (s.grade || 'stagiaire');
     const roleLabel = ROLE_LABELS[s.role] || 'Membre';
-    const next = nextGrade(grade);
-    const prev = prevGrade(grade);
+    const next = isObs ? null : nextGrade(grade);
+    const prev = isObs ? null : prevGrade(grade);
 
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
-      <td>${roleLabel}</td>
-      <td><span class="grade-badge ${grade}">${GRADE_LABELS[grade]}</span></td>
-      <td>
-        ${prev ? `<button class="btn-grade demote" data-id="${s.id}" data-grade="${prev}">↓ ${GRADE_LABELS[prev]}</button>` : ''}
-        ${next ? `<button class="btn-grade promote" data-id="${s.id}" data-grade="${next}">↑ ${GRADE_LABELS[next]}</button>` : '<span style="opacity:.4;font-size:12px">Grade maximum</span>'}
-      </td>
-    `;
+    if (isObs) {
+      tr.innerHTML = `
+        <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
+        <td><span class="role-badge observateur">Observateur</span></td>
+        <td><span class="grade-badge" style="opacity:.5">—</span></td>
+        <td><button class="btn-delete-obs-grade" data-id="${s.id}" data-nom="${esc(s.prenom)} ${esc(s.nom)}">Supprimer</button></td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
+        <td>${roleLabel}</td>
+        <td><span class="grade-badge ${grade}">${GRADE_LABELS[grade] || grade}</span></td>
+        <td>
+          ${prev ? `<button class="btn-grade demote" data-id="${s.id}" data-grade="${prev}">↓ ${GRADE_LABELS[prev]}</button>` : ''}
+          ${next ? `<button class="btn-grade promote" data-id="${s.id}" data-grade="${next}">↑ ${GRADE_LABELS[next]}</button>` : '<span style="opacity:.4;font-size:12px">Grade maximum</span>'}
+        </td>
+      `;
+    }
     tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('.btn-delete-obs-grade').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Supprimer l\'observateur ' + btn.dataset.nom + ' du registre ?')) return;
+      btn.disabled = true;
+      try {
+        await supaDelete('shinobis', `id=eq.${btn.dataset.id}`);
+        await loadAll();
+      } catch (e) { console.error(e); btn.disabled = false; }
+    });
   });
 
   tbody.querySelectorAll('.btn-grade').forEach(btn => {
@@ -529,7 +560,7 @@ async function loadGrades() {
       const grade = btn.dataset.grade;
       btn.disabled = true;
       try {
-        await supaPatch('shinobis', `id=eq.${id}`, { grade: grade === 'aucun' ? null : grade });
+        await supaPatch('shinobis', `id=eq.${id}`, { grade });
         await loadAll();
       } catch (e) {
         console.error(e);
@@ -538,6 +569,11 @@ async function loadGrades() {
     });
   });
 }
+
+document.getElementById('th-grade').addEventListener('click', () => {
+  gradeSortDir *= -1;
+  loadGrades();
+});
 
 // =====================
 // GESTION DES RÔLES
