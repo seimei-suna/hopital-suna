@@ -758,6 +758,33 @@ async function loadChat(forceScroll = false) {
   } catch (err) { console.error(err); }
 }
 
+// =====================
+// AJOUT OBSERVATEUR
+// =====================
+document.getElementById('btn-add-obs').addEventListener('click', async () => {
+  const prenom = document.getElementById('obs-prenom').value.trim();
+  const nom = document.getElementById('obs-nom').value.trim();
+  const msg = document.getElementById('obs-msg');
+  msg.innerHTML = '';
+
+  if (!prenom || !nom) {
+    msg.innerHTML = '<span style="color:var(--danger)">Remplis le prénom et le nom.</span>';
+    return;
+  }
+
+  try {
+    await supaPost('shinobis', { prenom, nom, role: 'membre', sceau: '' });
+    document.getElementById('obs-prenom').value = '';
+    document.getElementById('obs-nom').value = '';
+    msg.innerHTML = '<span style="color:var(--success)">' + esc(prenom) + ' ' + esc(nom) + ' ajouté au registre.</span>';
+    await loadAll();
+    setTimeout(() => { msg.innerHTML = ''; }, 3000);
+  } catch (e) {
+    console.error(e);
+    msg.innerHTML = '<span style="color:var(--danger)">Erreur lors de l\'ajout.</span>';
+  }
+});
+
 // --- Auto-login from session ---
 (async function autoLogin() {
   const saved = localStorage.getItem('hopital_admin_session');

@@ -163,6 +163,18 @@
               </div>
             </details>
             <details class="acc">
+              <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Ajouter un observateur</span><span class="acc-chevron"></span></summary>
+              <div class="acc-body">
+                <p class="info-text">Ajouter manuellement une personne au registre (observateur, externe). Elle n'aura pas de compte et ne pourra pas se connecter.</p>
+                <div class="filters">
+                  <div class="field"><label>Prénom</label><input type="text" id="obs-prenom" placeholder="Prénom RP"></div>
+                  <div class="field"><label>Nom</label><input type="text" id="obs-nom" placeholder="Nom RP"></div>
+                  <button id="btn-add-obs" class="btn-primary" style="width:auto;margin-top:20px;padding:10px 20px">Ajouter l'observateur</button>
+                </div>
+                <div id="obs-msg" style="margin-top:10px;"></div>
+              </div>
+            </details>
+            <details class="acc">
               <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8l3.8 3.6L12 5.5l4.7 6.1L20.5 8 19 18H5L3.5 8Z"/></svg><span>Gestion des Rôles</span><span class="acc-chevron"></span></summary>
               <div class="acc-body">
                 <p class="info-text">Promouvoir un shinobi en <strong>Gérant</strong> ou <strong>Co-Gérant</strong>, ou le repasser <strong>Membre</strong>.</p>
