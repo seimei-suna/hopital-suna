@@ -128,7 +128,7 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     if (existing.length > 0) { errEl.textContent = 'Ce shinobi est déjà enregistré.'; return; }
 
     const hashed = await hashSceau(sceau);
-    await supaPost('shinobis', { nom, prenom, sceau: hashed });
+    await supaPost('shinobis', { nom, prenom, sceau: hashed, grade: 'stagiaire' });
     sucEl.textContent = 'Enregistrement réussi ! Vous pouvez maintenant vous identifier.';
     document.getElementById('register-form').reset();
   } catch (err) {

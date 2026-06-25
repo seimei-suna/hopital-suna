@@ -13,7 +13,7 @@ const ICO_SUN = `<svg ${_S}><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.
 const ICO_MOON = `<svg ${_S}><path d="M20 13.5A7.5 7.5 0 1 1 10.5 4 6 6 0 0 0 20 13.5Z"/></svg>`;
 
 let currentUser = null;
-let tauxParGrade = { aucun: 0, stagiaire: 0, aspirant: 0, adepte: 0, expert: 0 };
+let tauxParGrade = { stagiaire: 0, aspirant: 0, adepte: 0, expert: 0 };
 let allShinobis = [];
 let shinobiMap = {};
 let chatInterval = null;
@@ -482,8 +482,8 @@ async function loadPaye() {
 // =====================
 // GRADES
 // =====================
-const GRADES = ['aucun', 'stagiaire', 'aspirant', 'adepte', 'expert'];
-const GRADE_LABELS = { aucun: 'Aucun', stagiaire: 'Stagiaire', aspirant: 'Aspirant', adepte: 'Adepte', expert: 'Expert' };
+const GRADES = ['stagiaire', 'aspirant', 'adepte', 'expert'];
+const GRADE_LABELS = { stagiaire: 'Stagiaire', aspirant: 'Aspirant', adepte: 'Adepte', expert: 'Expert' };
 
 function nextGrade(current) {
   const i = GRADES.indexOf(current || 'aucun');
@@ -504,9 +504,9 @@ async function loadGrades() {
     return;
   }
 
-  allShinobis.forEach(s => {
-    const grade = s.grade || 'aucun';
-    const roleLabel = s.role === 'gerant' ? 'Gérant' : s.role === 'co_gerant' ? 'Co-Gérant' : 'Membre';
+  allShinobis.filter(s => s.role !== 'observateur').forEach(s => {
+    const grade = s.grade || 'stagiaire';
+    const roleLabel = ROLE_LABELS[s.role] || 'Membre';
     const next = nextGrade(grade);
     const prev = prevGrade(grade);
 
@@ -542,7 +542,7 @@ async function loadGrades() {
 // =====================
 // GESTION DES RÔLES
 // =====================
-const ROLE_LABELS = { gerant: 'Gérant', co_gerant: 'Co-Gérant', membre: 'Membre' };
+const ROLE_LABELS = { gerant: 'Gérant', co_gerant: 'Co-Gérant', membre: 'Membre', observateur: 'Observateur' };
 
 async function loadRoles() {
   const tbody = document.getElementById('roles-body');
@@ -559,12 +559,24 @@ async function loadRoles() {
       `<button class="btn-role ${r}" data-id="${s.id}" data-role="${r}"${role === r ? ' disabled' : ''}>${ROLE_LABELS[r]}</button>`;
 
     const tr = document.createElement('tr');
+    const isObs = role === 'observateur';
     tr.innerHTML = `
       <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
-      <td><span class="role-badge ${role}">${ROLE_LABELS[role]}</span></td>
-      <td>${btn('gerant')}${btn('co_gerant')}${btn('membre')}</td>
+      <td><span class="role-badge ${role}">${ROLE_LABELS[role] || role}</span></td>
+      <td>${isObs ? `<button class="btn-delete-obs" data-id="${s.id}" data-nom="${esc(s.prenom)} ${esc(s.nom)}">Supprimer</button>` : btn('gerant') + btn('co_gerant') + btn('membre')}</td>
     `;
     tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('.btn-delete-obs').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Supprimer l\'observateur ' + btn.dataset.nom + ' du registre ?')) return;
+      btn.disabled = true;
+      try {
+        await supaDelete('shinobis', `id=eq.${btn.dataset.id}`);
+        await loadAll();
+      } catch (e) { console.error(e); btn.disabled = false; }
+    });
   });
 
   tbody.querySelectorAll('.btn-role').forEach(btn => {
@@ -574,7 +586,6 @@ async function loadRoles() {
       btn.disabled = true;
       try {
         await supaPatch('shinobis', `id=eq.${id}`, { role });
-        // L'admin se retire lui-même les droits de gérance
         if (currentUser && id === currentUser.id && role === 'membre') {
           alert('Vous venez de retirer vos propres droits de gérance. Vous allez être déconnecté.');
           localStorage.removeItem('hopital_admin_session');
@@ -773,7 +784,7 @@ document.getElementById('btn-add-obs').addEventListener('click', async () => {
   }
 
   try {
-    await supaPost('shinobis', { prenom, nom, role: 'membre', sceau: '' });
+    await supaPost('shinobis', { prenom, nom, role: 'observateur', sceau: '' });
     document.getElementById('obs-prenom').value = '';
     document.getElementById('obs-nom').value = '';
     msg.innerHTML = '<span style="color:var(--success)">' + esc(prenom) + ' ' + esc(nom) + ' ajouté au registre.</span>';
