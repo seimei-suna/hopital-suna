@@ -164,7 +164,7 @@ function populateShinobiSelects() {
 function getDateRange(selectId) {
   const period = document.getElementById(selectId).value;
   const now = new Date();
-  let from = null;
+  let from = null, to = null;
 
   if (period === 'today') {
     from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -172,11 +172,18 @@ function getDateRange(selectId) {
     const day = now.getDay();
     const diff = day === 0 ? 6 : day - 1;
     from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
+  } else if (period.startsWith('week-')) {
+    const weeksAgo = parseInt(period.split('-')[1]);
+    const day = now.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    const thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diff);
+    from = new Date(thisMonday.getTime() - weeksAgo * 7 * 86400000);
+    to = new Date(from.getTime() + 7 * 86400000);
   } else if (period === 'month') {
     from = new Date(now.getFullYear(), now.getMonth(), 1);
   }
 
-  return from ? from.toISOString() : null;
+  return { from: from ? from.toISOString() : null, to: to ? to.toISOString() : null };
 }
 
 document.getElementById('btn-refresh').addEventListener('click', loadAll);
@@ -205,8 +212,9 @@ async function loadStats() {
 async function loadRecap() {
   try {
     let query = 'select=id,debut,fin,actif,shinobi_id';
-    const from = getDateRange('filter-period');
-    if (from) query += `&debut=gte.${from}`;
+    const range = getDateRange('filter-period');
+    if (range.from) query += `&debut=gte.${range.from}`;
+    if (range.to) query += `&debut=lt.${range.to}`;
 
     const shinobiFilter = document.getElementById('filter-shinobi').value;
     if (shinobiFilter !== 'all') query += `&shinobi_id=eq.${shinobiFilter}`;
@@ -261,8 +269,9 @@ async function loadRecap() {
 async function loadDetail() {
   try {
     let query = 'select=id,debut,fin,actif,shinobi_id';
-    const from = getDateRange('filter-period');
-    if (from) query += `&debut=gte.${from}`;
+    const range = getDateRange('filter-period');
+    if (range.from) query += `&debut=gte.${range.from}`;
+    if (range.to) query += `&debut=lt.${range.to}`;
 
     const shinobiFilter = document.getElementById('filter-shinobi').value;
     if (shinobiFilter !== 'all') query += `&shinobi_id=eq.${shinobiFilter}`;
@@ -426,8 +435,9 @@ document.getElementById('btn-save-taux').addEventListener('click', async () => {
 async function loadPaye() {
   try {
     let query = 'select=id,debut,fin,actif,shinobi_id';
-    const from = getDateRange('paye-period');
-    if (from) query += `&debut=gte.${from}`;
+    const range = getDateRange('paye-period');
+    if (range.from) query += `&debut=gte.${range.from}`;
+    if (range.to) query += `&debut=lt.${range.to}`;
     query += '&order=debut.desc';
 
     const postes = await supaGet('postes', query);
