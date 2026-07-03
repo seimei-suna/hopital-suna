@@ -360,7 +360,7 @@ async function loadData() {
               <div class="cours-titre">${escapeHtml(c.titre)}${c.description ? ` <span class="cours-desc-text">— ${escapeHtml(c.description)}</span>` : ''}</div>
               <div class="cours-meta">${escapeHtml(nom)} · ${date}</div>
             </div>
-            ${!isOwnCours ? `<button class="btn-participer${participated ? ' participe' : ''}" ${participated ? 'disabled' : `onclick="participerCours(${c.id})"`}>${participated ? '✓ Participé' : "J'ai participé"}</button>` : ''}
+            ${!isOwnCours ? `<button class="btn-participer${participated ? ' participe' : ''}" ${participated ? 'disabled' : `onclick="participerCours('${c.id}')"`}>${participated ? '✓ Participé' : "J'ai participé"}</button>` : ''}
           </div>`;
         coursList.appendChild(li);
       });

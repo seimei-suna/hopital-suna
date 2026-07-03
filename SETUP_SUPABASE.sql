@@ -74,6 +74,14 @@ CREATE TABLE IF NOT EXISTS cours (
   created_at timestamptz DEFAULT now()
 );
 
+-- Table des participations aux cours
+CREATE TABLE IF NOT EXISTS cours_participations (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  cours_id uuid REFERENCES cours(id) ON DELETE CASCADE,
+  shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
+  created_at timestamptz DEFAULT now()
+);
+
 -- Activer RLS
 ALTER TABLE shinobis ENABLE ROW LEVEL SECURITY;
 ALTER TABLE postes ENABLE ROW LEVEL SECURITY;
@@ -82,6 +90,7 @@ ALTER TABLE avertissements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages_gerance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cours ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cours_participations ENABLE ROW LEVEL SECURITY;
 
 -- DROP les policies existantes avant de les recréer
 DROP POLICY IF EXISTS "Accès public shinobis" ON shinobis;
@@ -91,6 +100,7 @@ DROP POLICY IF EXISTS "Accès public avertissements" ON avertissements;
 DROP POLICY IF EXISTS "Accès public config" ON config;
 DROP POLICY IF EXISTS "Accès public messages_gerance" ON messages_gerance;
 DROP POLICY IF EXISTS "Accès public cours" ON cours;
+DROP POLICY IF EXISTS "Accès public cours_participations" ON cours_participations;
 
 CREATE POLICY "Accès public shinobis" ON shinobis FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public postes" ON postes FOR ALL USING (true) WITH CHECK (true);
@@ -99,6 +109,7 @@ CREATE POLICY "Accès public avertissements" ON avertissements FOR ALL USING (tr
 CREATE POLICY "Accès public config" ON config FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public messages_gerance" ON messages_gerance FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public cours" ON cours FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Accès public cours_participations" ON cours_participations FOR ALL USING (true) WITH CHECK (true);
 
 -- Pour promouvoir quelqu'un en gérant (remplace le nom/prénom) :
 -- UPDATE shinobis SET role = 'gerant' WHERE nom = 'Gaïa' AND prenom = 'Artel';
