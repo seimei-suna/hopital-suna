@@ -191,10 +191,16 @@ main { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
 .cours-list h4 { font-size: 14px; color: var(--text-light); margin-bottom: 10px; }
 .cours-list ul { list-style: none; }
 .cours-list li { padding: 10px 0; border-bottom: 1px solid rgba(196,162,101,.3); }
-.cours-item { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.cours-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.cours-left { flex: 1; min-width: 0; }
 .cours-titre { font-size: 14px; font-weight: 700; color: var(--brown-dark); }
 .cours-desc-text { font-weight: 400; color: var(--text-light); }
-.cours-meta { font-size: 12px; color: var(--text-light); white-space: nowrap; }
+.cours-meta { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+.btn-participer { flex-shrink: 0; font-size: 12px; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--terracotta); background: transparent; color: var(--terracotta); cursor: pointer; white-space: nowrap; transition: .2s; font-family: inherit; }
+.btn-participer:hover:not(:disabled) { background: rgba(196,92,58,.15); }
+.btn-participer.participe { border-color: #4caf50; color: #4caf50; cursor: default; }
+body.dark .btn-participer { color: #e8a87c; border-color: #e8a87c; }
+body.dark .btn-participer.participe { color: #81c784; border-color: #81c784; }
 
 h3 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 8px; color: var(--brown-dark); }
 .info-text { font-size: 14px; color: var(--text-light); margin-bottom: 16px; }

@@ -338,6 +338,10 @@ async function loadData() {
 
     // Load cours
     const cours = await supaGet('cours', 'select=id,titre,description,created_at,shinobi_id&order=created_at.desc&limit=40');
+    const participations = currentUser
+      ? await supaGet('cours_participations', `shinobi_id=eq.${currentUser.id}&select=cours_id`)
+      : [];
+    const participatedIds = new Set(participations.map(p => p.cours_id));
     const coursList = document.getElementById('cours-list');
     coursList.innerHTML = '';
     if (cours.length === 0) {
@@ -347,11 +351,16 @@ async function loadData() {
         const s = shinobiMap[c.shinobi_id];
         const nom = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
         const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+        const participated = participatedIds.has(c.id);
+        const isOwnCours = currentUser && c.shinobi_id === currentUser.id;
         const li = document.createElement('li');
         li.innerHTML = `
           <div class="cours-item">
-            <div class="cours-titre">${escapeHtml(c.titre)}${c.description ? ` <span class="cours-desc-text">— ${escapeHtml(c.description)}</span>` : ''}</div>
-            <div class="cours-meta">${escapeHtml(nom)} · ${date}</div>
+            <div class="cours-left">
+              <div class="cours-titre">${escapeHtml(c.titre)}${c.description ? ` <span class="cours-desc-text">— ${escapeHtml(c.description)}</span>` : ''}</div>
+              <div class="cours-meta">${escapeHtml(nom)} · ${date}</div>
+            </div>
+            ${!isOwnCours ? `<button class="btn-participer${participated ? ' participe' : ''}" ${participated ? 'disabled' : `onclick="participerCours(${c.id})"`}>${participated ? '✓ Participé' : "J'ai participé"}</button>` : ''}
           </div>`;
         coursList.appendChild(li);
       });
@@ -417,6 +426,14 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     alert('Erreur lors de l\'envoi de l\'alerte.');
   }
 });
+
+window.participerCours = async function(coursId) {
+  if (!currentUser) return;
+  try {
+    await supaPost('cours_participations', { cours_id: coursId, shinobi_id: currentUser.id });
+    loadData();
+  } catch (e) { console.error(e); }
+};
 
 window.resolveAlerte = async function(id) {
   try {
