@@ -338,10 +338,12 @@ async function loadData() {
 
     // Load cours
     const cours = await supaGet('cours', 'select=id,titre,description,created_at,shinobi_id&order=created_at.desc&limit=40');
-    const participations = currentUser
-      ? await supaGet('cours_participations', `shinobi_id=eq.${currentUser.id}&select=cours_id`)
-      : [];
-    const participatedIds = new Set(participations.map(p => p.cours_id));
+    const allParticipations = await supaGet('cours_participations', 'select=cours_id,shinobi_id');
+    const participantsByCours = {};
+    allParticipations.forEach(p => {
+      if (!participantsByCours[p.cours_id]) participantsByCours[p.cours_id] = [];
+      participantsByCours[p.cours_id].push(p.shinobi_id);
+    });
     const coursList = document.getElementById('cours-list');
     coursList.innerHTML = '';
     if (cours.length === 0) {
@@ -351,8 +353,13 @@ async function loadData() {
         const s = shinobiMap[c.shinobi_id];
         const nom = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
         const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
-        const participated = participatedIds.has(c.id);
+        const participantIds = participantsByCours[c.id] || [];
+        const participated = currentUser && participantIds.includes(currentUser.id);
         const isOwnCours = currentUser && c.shinobi_id === currentUser.id;
+        const participantNames = participantIds.map(id => {
+          const p = shinobiMap[id];
+          return p ? `${p.prenom} ${p.nom}` : 'Inconnu';
+        });
         const li = document.createElement('li');
         li.innerHTML = `
           <div class="cours-item">
@@ -361,7 +368,13 @@ async function loadData() {
               <div class="cours-meta">${escapeHtml(nom)} · ${date}</div>
             </div>
             ${!isOwnCours ? `<button class="btn-participer${participated ? ' participe' : ''}" ${participated ? 'disabled' : `onclick="participerCours('${c.id}')"`}>${participated ? '✓ Participé' : "J'ai participé"}</button>` : ''}
-          </div>`;
+          </div>
+          <details class="cours-participants">
+            <summary>Participants (${participantNames.length})</summary>
+            ${participantNames.length
+              ? `<ul>${participantNames.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`
+              : `<p class="no-participants">Aucun participant pour le moment</p>`}
+          </details>`;
         coursList.appendChild(li);
       });
     }

@@ -202,6 +202,16 @@ main { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
 body.dark .btn-participer { color: #e8a87c; border-color: #e8a87c; }
 body.dark .btn-participer.participe { color: #81c784; border-color: #81c784; }
 
+.cours-participants { margin-top: 6px; font-size: 12px; }
+.cours-participants summary { cursor: pointer; color: var(--text-light); list-style: none; }
+.cours-participants summary::-webkit-details-marker { display: none; }
+.cours-participants summary::before { content: '▸ '; }
+.cours-participants[open] summary::before { content: '▾ '; }
+.cours-participants ul { list-style: none; margin-top: 6px; padding-left: 14px; }
+.cours-participants ul li { padding: 3px 0; border-bottom: none; color: var(--brown-dark); }
+.cours-participants .no-participants { margin-top: 6px; padding-left: 14px; color: var(--text-light); font-style: italic; }
+body.dark .cours-participants ul li { color: #f3e8d0; }
+
 h3 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 8px; color: var(--brown-dark); }
 .info-text { font-size: 14px; color: var(--text-light); margin-bottom: 16px; }
 
