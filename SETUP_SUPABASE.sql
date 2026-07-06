@@ -82,6 +82,15 @@ CREATE TABLE IF NOT EXISTS cours_participations (
   created_at timestamptz DEFAULT now()
 );
 
+-- Table des versements de paye (case à cocher "Payé" par shinobi et par période)
+CREATE TABLE IF NOT EXISTS paye_versements (
+  shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
+  periode_key text NOT NULL,
+  paye boolean NOT NULL DEFAULT true,
+  paid_at timestamptz DEFAULT now(),
+  PRIMARY KEY (shinobi_id, periode_key)
+);
+
 -- Activer RLS
 ALTER TABLE shinobis ENABLE ROW LEVEL SECURITY;
 ALTER TABLE postes ENABLE ROW LEVEL SECURITY;
@@ -91,6 +100,7 @@ ALTER TABLE config ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages_gerance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cours ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cours_participations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE paye_versements ENABLE ROW LEVEL SECURITY;
 
 -- DROP les policies existantes avant de les recréer
 DROP POLICY IF EXISTS "Accès public shinobis" ON shinobis;
@@ -101,6 +111,7 @@ DROP POLICY IF EXISTS "Accès public config" ON config;
 DROP POLICY IF EXISTS "Accès public messages_gerance" ON messages_gerance;
 DROP POLICY IF EXISTS "Accès public cours" ON cours;
 DROP POLICY IF EXISTS "Accès public cours_participations" ON cours_participations;
+DROP POLICY IF EXISTS "Accès public paye_versements" ON paye_versements;
 
 CREATE POLICY "Accès public shinobis" ON shinobis FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public postes" ON postes FOR ALL USING (true) WITH CHECK (true);
@@ -110,6 +121,7 @@ CREATE POLICY "Accès public config" ON config FOR ALL USING (true) WITH CHECK (
 CREATE POLICY "Accès public messages_gerance" ON messages_gerance FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public cours" ON cours FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public cours_participations" ON cours_participations FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Accès public paye_versements" ON paye_versements FOR ALL USING (true) WITH CHECK (true);
 
 -- Pour promouvoir quelqu'un en gérant (remplace le nom/prénom) :
 -- UPDATE shinobis SET role = 'gerant' WHERE nom = 'Gaïa' AND prenom = 'Artel';

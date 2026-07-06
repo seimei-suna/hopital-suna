@@ -447,17 +447,21 @@ async function loadPaye() {
       const s = shinobiMap[p.shinobi_id];
       if (!s) return;
       if (!map[s.id]) {
-        map[s.id] = { prenom: s.prenom, nom: s.nom, grade: s.grade || 'aucun', postes: [] };
+        map[s.id] = { id: s.id, prenom: s.prenom, nom: s.nom, grade: s.grade || 'aucun', postes: [] };
       }
       map[s.id].postes.push(p);
     });
+
+    const periodeKey = `${range.from || 'null'}_${range.to || 'null'}`;
+    const versements = await supaGet('paye_versements', `periode_key=eq.${encodeURIComponent(periodeKey)}&select=shinobi_id`);
+    const paidSet = new Set(versements.map(v => v.shinobi_id));
 
     const tbody = document.getElementById('paye-body');
     tbody.innerHTML = '';
 
     const entries = Object.values(map);
     if (entries.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Aucune donnée pour cette période</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-row">Aucune donnée pour cette période</td></tr>';
       document.getElementById('paye-grand-total').textContent = '0';
       return;
     }
@@ -473,6 +477,7 @@ async function loadPaye() {
       grandTotal += paye;
 
       const gradeLabel = GRADE_LABELS[e.grade] || 'Aucun';
+      const isPaid = paidSet.has(e.id);
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -481,6 +486,7 @@ async function loadPaye() {
         <td>${formatDuration(minutes)}</td>
         <td>${taux} Ryos</td>
         <td class="paye-ryos">${paye.toLocaleString('fr-FR')} Ryos</td>
+        <td style="text-align:center"><input type="checkbox" class="paye-checkbox" ${isPaid ? 'checked' : ''} onchange="togglePaye('${e.id}','${periodeKey}',this.checked)"></td>
       `;
       tbody.appendChild(tr);
     });
@@ -488,6 +494,16 @@ async function loadPaye() {
     document.getElementById('paye-grand-total').textContent = grandTotal.toLocaleString('fr-FR');
   } catch (e) { console.error(e); }
 }
+
+window.togglePaye = async function(shinobiId, periodeKey, checked) {
+  try {
+    if (checked) {
+      await supaUpsert('paye_versements', { shinobi_id: shinobiId, periode_key: periodeKey, paye: true });
+    } else {
+      await supaDelete('paye_versements', `shinobi_id=eq.${shinobiId}&periode_key=eq.${encodeURIComponent(periodeKey)}`);
+    }
+  } catch (e) { console.error(e); alert('Erreur lors de la mise à jour du statut de paye.'); }
+};
 
 // =====================
 // GRADES
