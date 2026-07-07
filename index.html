@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hôpital de Suna — Centre Médical Shinobi</title>
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -137,7 +137,10 @@
               <p class="info-text">Programme et consulte les prochains rendez-vous de formation de la Seimei.</p>
               <form id="planning-form" class="cours-form">
                 <input type="text" id="planning-titre" placeholder="Nom du cours (ex. Suture avancée)" maxlength="120" required>
-                <input type="datetime-local" id="planning-datetime" required>
+                <div class="planning-dt-row">
+                  <select id="planning-jour" required></select>
+                  <input type="time" id="planning-heure" required>
+                </div>
                 <input type="text" id="planning-enseignant" placeholder="Nom de l'enseignant" maxlength="80" required>
                 <button type="submit" class="btn-primary">Ajouter au planning</button>
               </form>
@@ -164,6 +167,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

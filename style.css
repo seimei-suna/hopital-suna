@@ -212,6 +212,14 @@ body.dark .btn-participer.participe { color: #81c784; border-color: #81c784; }
 .cours-participants .no-participants { margin-top: 6px; padding-left: 14px; color: var(--text-light); font-style: italic; }
 
 /* Planning des cours — emploi du temps jour par jour */
+.planning-dt-row { display: flex; gap: 10px; }
+.planning-dt-row select, .planning-dt-row input[type="time"] {
+  padding: 10px 14px; border: 2px solid var(--sand-dark); border-radius: 8px;
+  background: var(--cream); font-family: inherit; font-size: 14px; color: var(--text);
+}
+.planning-dt-row select { flex: 1; text-transform: capitalize; }
+.planning-dt-row select:focus, .planning-dt-row input[type="time"]:focus { outline: none; border-color: var(--terracotta); }
+body.dark .planning-dt-row select, body.dark .planning-dt-row input[type="time"] { background: #2a2118; border-color: #4a3a28; color: #f3e8d0; }
 .planning-day-head { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--terracotta); text-transform: capitalize; padding: 14px 0 6px !important; border-bottom: 2px solid rgba(196,92,58,.35) !important; letter-spacing: .03em; }
 .planning-day-head.planning-passe { color: var(--text-light); border-bottom-color: rgba(150,150,150,.3) !important; }
 .planning-row { border-bottom: 1px solid rgba(196,162,101,.2) !important; }

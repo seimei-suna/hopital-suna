@@ -444,22 +444,39 @@ document.getElementById('cours-form').addEventListener('submit', async (e) => {
   } catch (err) { console.error(err); alert('Erreur lors de l\'ajout du cours.'); }
 });
 
+// Remplit le menu des jours (aujourd'hui + 13 jours), sans afficher l'année
+(function populatePlanningJours() {
+  const sel = document.getElementById('planning-jour');
+  const today = new Date();
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+    const opt = document.createElement('option');
+    opt.value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    let label = d.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+    if (i === 0) label += ' (aujourd\'hui)';
+    if (i === 1) label += ' (demain)';
+    opt.textContent = label;
+    sel.appendChild(opt);
+  }
+})();
+
 document.getElementById('planning-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!currentUser) return;
   const titre = document.getElementById('planning-titre').value.trim();
-  const datetimeVal = document.getElementById('planning-datetime').value;
+  const jour = document.getElementById('planning-jour').value;
+  const heure = document.getElementById('planning-heure').value;
   const enseignant = document.getElementById('planning-enseignant').value.trim();
-  if (!titre || !datetimeVal || !enseignant) return;
+  if (!titre || !jour || !heure || !enseignant) return;
   try {
     await supaPost('planning_cours', {
       shinobi_id: currentUser.id,
       titre,
-      date_heure: new Date(datetimeVal).toISOString(),
+      date_heure: new Date(jour + 'T' + heure).toISOString(),
       enseignant
     });
     document.getElementById('planning-titre').value = '';
-    document.getElementById('planning-datetime').value = '';
+    document.getElementById('planning-heure').value = '';
     document.getElementById('planning-enseignant').value = '';
     loadData();
   } catch (err) { console.error(err); alert('Erreur lors de l\'ajout au planning.'); }
