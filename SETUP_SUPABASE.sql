@@ -92,6 +92,14 @@ CREATE TABLE IF NOT EXISTS planning_cours (
   created_at timestamptz DEFAULT now()
 );
 
+-- Table des inscriptions aux cours planifiés
+CREATE TABLE IF NOT EXISTS planning_participations (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  planning_id uuid REFERENCES planning_cours(id) ON DELETE CASCADE,
+  shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
+  created_at timestamptz DEFAULT now()
+);
+
 -- Table des versements de paye (case à cocher "Payé" par shinobi et par période)
 CREATE TABLE IF NOT EXISTS paye_versements (
   shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
@@ -111,6 +119,7 @@ ALTER TABLE messages_gerance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cours ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cours_participations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planning_cours ENABLE ROW LEVEL SECURITY;
+ALTER TABLE planning_participations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE paye_versements ENABLE ROW LEVEL SECURITY;
 
 -- DROP les policies existantes avant de les recréer
@@ -123,6 +132,7 @@ DROP POLICY IF EXISTS "Accès public messages_gerance" ON messages_gerance;
 DROP POLICY IF EXISTS "Accès public cours" ON cours;
 DROP POLICY IF EXISTS "Accès public cours_participations" ON cours_participations;
 DROP POLICY IF EXISTS "Accès public planning_cours" ON planning_cours;
+DROP POLICY IF EXISTS "Accès public planning_participations" ON planning_participations;
 DROP POLICY IF EXISTS "Accès public paye_versements" ON paye_versements;
 
 CREATE POLICY "Accès public shinobis" ON shinobis FOR ALL USING (true) WITH CHECK (true);
@@ -134,6 +144,7 @@ CREATE POLICY "Accès public messages_gerance" ON messages_gerance FOR ALL USING
 CREATE POLICY "Accès public cours" ON cours FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public cours_participations" ON cours_participations FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public planning_cours" ON planning_cours FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Accès public planning_participations" ON planning_participations FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public paye_versements" ON paye_versements FOR ALL USING (true) WITH CHECK (true);
 
 -- Pour promouvoir quelqu'un en gérant (remplace le nom/prénom) :

@@ -381,6 +381,12 @@ async function loadData() {
 
     // Load planning des cours (emploi du temps jour par jour)
     const planning = await supaGet('planning_cours', 'select=id,titre,date_heure,enseignant,shinobi_id&order=date_heure.asc&limit=80');
+    const planningParts = await supaGet('planning_participations', 'select=planning_id,shinobi_id');
+    const partsByPlanning = {};
+    planningParts.forEach(pp => {
+      if (!partsByPlanning[pp.planning_id]) partsByPlanning[pp.planning_id] = [];
+      partsByPlanning[pp.planning_id].push(pp.shinobi_id);
+    });
     const planningList = document.getElementById('planning-list');
     planningList.innerHTML = '';
     if (planning.length === 0) {
@@ -411,6 +417,12 @@ async function loadData() {
           const heureStr = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
           const passe = d.getTime() < now;
           const canDelete = currentUser && (isGerantPlanning || p.shinobi_id === currentUser.id);
+          const pIds = partsByPlanning[p.id] || [];
+          const registered = currentUser && pIds.includes(currentUser.id);
+          const pNames = pIds.map(id => {
+            const s = shinobiMap[id];
+            return s ? `${s.prenom} ${s.nom}` : 'Inconnu';
+          });
           const li = document.createElement('li');
           li.className = 'planning-row';
           li.innerHTML = `
@@ -420,8 +432,15 @@ async function loadData() {
                 <div class="cours-titre">${escapeHtml(p.titre)}</div>
                 <div class="cours-meta">Enseignant : ${escapeHtml(p.enseignant)}</div>
               </div>
+              ${!passe ? `<button class="btn-participer${registered ? ' participe' : ''}" onclick="togglePlanningPart('${p.id}',${registered})" title="${registered ? 'Cliquer pour se désinscrire' : 'S\'inscrire à ce cours'}">${registered ? '✓ Inscrit' : 'Je participe'}</button>` : ''}
               ${canDelete ? `<button class="btn-del-planning" onclick="deletePlanning('${p.id}')" title="Supprimer ce cours">✕</button>` : ''}
-            </div>`;
+            </div>
+            <details class="cours-participants">
+              <summary>Participants (${pNames.length})</summary>
+              ${pNames.length
+                ? `<ul>${pNames.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`
+                : `<p class="no-participants">Personne d'inscrit pour le moment</p>`}
+            </details>`;
           planningList.appendChild(li);
         });
       });
@@ -469,11 +488,19 @@ document.getElementById('planning-form').addEventListener('submit', async (e) =>
   const enseignant = document.getElementById('planning-enseignant').value.trim();
   if (!titre || !jour || !heure || !enseignant) return;
   try {
+    const dateHeure = new Date(jour + 'T' + heure);
     await supaPost('planning_cours', {
       shinobi_id: currentUser.id,
       titre,
-      date_heure: new Date(jour + 'T' + heure).toISOString(),
+      date_heure: dateHeure.toISOString(),
       enseignant
+    });
+    // Ajoute aussi le cours dans la section Cours de base
+    const dayLabel = dateHeure.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+    await supaPost('cours', {
+      shinobi_id: currentUser.id,
+      titre,
+      description: `Prévu le ${dayLabel} à ${heure} — Enseignant : ${enseignant}`
     });
     document.getElementById('planning-titre').value = '';
     document.getElementById('planning-heure').value = '';
@@ -525,6 +552,19 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     alert('Erreur lors de l\'envoi de l\'alerte.');
   }
 });
+
+window.togglePlanningPart = async function(planningId, registered) {
+  if (!currentUser) return;
+  try {
+    if (registered) {
+      const res = await fetch(`${SUPABASE_URL}/planning_participations?planning_id=eq.${planningId}&shinobi_id=eq.${currentUser.id}`, { method: 'DELETE', headers });
+      if (!res.ok) throw new Error(await res.text());
+    } else {
+      await supaPost('planning_participations', { planning_id: planningId, shinobi_id: currentUser.id });
+    }
+    loadData();
+  } catch (e) { console.error(e); alert('Erreur lors de l\'inscription.'); }
+};
 
 window.deletePlanning = async function(id) {
   if (!currentUser) return;
