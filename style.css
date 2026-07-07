@@ -384,6 +384,7 @@ body.dark .subtitle, body.dark .info-text,
 body.dark .poste-list h4, body.dark .alertes-list h4, body.dark .cours-list h4 { color: #b9a684; }
 body.dark .auth-form, body.dark .status-card,
 body.dark .poste-section, body.dark .alertes-section, body.dark .cours-section,
+body.dark .planning-section,
 body.dark .modal { background: rgba(40,30,18,.92); border-color: #4a3a28; }
 body.dark .field input, body.dark .cours-form input,
 body.dark .cours-form textarea, body.dark .modal textarea {
