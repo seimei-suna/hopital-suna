@@ -211,20 +211,20 @@ body.dark .btn-participer.participe { color: #81c784; border-color: #81c784; }
 .cours-participants ul li { padding: 3px 0; border-bottom: none; color: var(--brown-dark); }
 .cours-participants .no-participants { margin-top: 6px; padding-left: 14px; color: var(--text-light); font-style: italic; }
 
-/* Planning des cours */
-.planning-item { display: flex; align-items: center; gap: 16px; }
-.planning-date { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 78px; padding: 6px 10px; border-radius: 8px; background: rgba(196,92,58,.1); border: 1px solid var(--sand-dark); font-size: 11px; font-weight: 700; color: var(--terracotta); text-transform: capitalize; text-align: center; line-height: 1.3; }
-.planning-date .planning-heure { font-size: 14px; font-weight: 900; color: var(--brown-dark); margin-top: 2px; }
+/* Planning des cours — emploi du temps jour par jour */
+.planning-day-head { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 700; color: var(--terracotta); text-transform: capitalize; padding: 14px 0 6px !important; border-bottom: 2px solid rgba(196,92,58,.35) !important; letter-spacing: .03em; }
+.planning-day-head.planning-passe { color: var(--text-light); border-bottom-color: rgba(150,150,150,.3) !important; }
+.planning-row { border-bottom: 1px solid rgba(196,162,101,.2) !important; }
+.planning-item { display: flex; align-items: center; gap: 14px; }
+.planning-heure-badge { flex-shrink: 0; min-width: 52px; text-align: center; padding: 4px 8px; border-radius: 7px; background: rgba(196,92,58,.1); border: 1px solid var(--sand-dark); font-size: 13px; font-weight: 900; color: var(--brown-dark); }
 .planning-info { flex: 1; min-width: 0; }
 .planning-passe { opacity: .45; }
-.planning-passe .planning-date { background: rgba(150,150,150,.12); border-color: rgba(150,150,150,.3); color: var(--text-light); }
-.planning-passe .planning-date .planning-heure { color: var(--text-light); }
-body.dark .planning-date { background: rgba(232,168,124,.12); }
-body.dark .planning-date .planning-heure { color: #f3e8d0; }
-@media(max-width:520px){
-  .planning-item { flex-wrap: wrap; }
-  .planning-date { flex-direction: row; gap: 6px; min-width: 0; }
-}
+.planning-passe .planning-heure-badge { background: rgba(150,150,150,.12); border-color: rgba(150,150,150,.3); color: var(--text-light); }
+.btn-del-planning { flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px; border: 1px solid rgba(196,69,58,.5); background: transparent; color: #c4453a; font-size: 13px; line-height: 1; cursor: pointer; transition: .2s; }
+.btn-del-planning:hover { background: rgba(196,69,58,.15); }
+body.dark .planning-day-head { color: #e8a87c; }
+body.dark .planning-heure-badge { background: rgba(232,168,124,.12); color: #f3e8d0; }
+body.dark .btn-del-planning { color: #ff8a7a; border-color: rgba(255,138,122,.5); }
 body.dark .cours-participants ul li { color: #f3e8d0; }
 
 h3 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 8px; color: var(--brown-dark); }

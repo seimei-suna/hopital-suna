@@ -379,29 +379,51 @@ async function loadData() {
       });
     }
 
-    // Load planning des cours
-    const planning = await supaGet('planning_cours', 'select=id,titre,date_heure,enseignant&order=date_heure.asc&limit=60');
+    // Load planning des cours (emploi du temps jour par jour)
+    const planning = await supaGet('planning_cours', 'select=id,titre,date_heure,enseignant,shinobi_id&order=date_heure.asc&limit=80');
     const planningList = document.getElementById('planning-list');
     planningList.innerHTML = '';
     if (planning.length === 0) {
       planningList.innerHTML = '<li style="opacity:.5;list-style:none">Aucun cours planifié pour le moment</li>';
     } else {
       const now = Date.now();
+      const isGerantPlanning = currentUser && (currentUser.role === 'gerant' || currentUser.role === 'co_gerant');
+      const byDay = {};
       planning.forEach(p => {
         const d = new Date(p.date_heure);
-        const dateStr = d.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
-        const heureStr = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        const passe = d.getTime() < now;
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <div class="planning-item${passe ? ' planning-passe' : ''}">
-            <div class="planning-date">${dateStr}<span class="planning-heure">${heureStr}</span></div>
-            <div class="planning-info">
-              <div class="cours-titre">${escapeHtml(p.titre)}</div>
-              <div class="cours-meta">Enseignant : ${escapeHtml(p.enseignant)}</div>
-            </div>
-          </div>`;
-        planningList.appendChild(li);
+        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        if (!byDay[key]) byDay[key] = { date: d, items: [] };
+        byDay[key].items.push(p);
+      });
+      Object.keys(byDay).sort().forEach(key => {
+        const day = byDay[key];
+        const endOfDay = new Date(day.date.getFullYear(), day.date.getMonth(), day.date.getDate() + 1).getTime();
+        const dayPasse = endOfDay < now;
+        const dayLabel = day.date.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+
+        const liHead = document.createElement('li');
+        liHead.className = 'planning-day-head' + (dayPasse ? ' planning-passe' : '');
+        liHead.textContent = dayLabel;
+        planningList.appendChild(liHead);
+
+        day.items.forEach(p => {
+          const d = new Date(p.date_heure);
+          const heureStr = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          const passe = d.getTime() < now;
+          const canDelete = currentUser && (isGerantPlanning || p.shinobi_id === currentUser.id);
+          const li = document.createElement('li');
+          li.className = 'planning-row';
+          li.innerHTML = `
+            <div class="planning-item${passe ? ' planning-passe' : ''}">
+              <span class="planning-heure-badge">${heureStr}</span>
+              <div class="planning-info">
+                <div class="cours-titre">${escapeHtml(p.titre)}</div>
+                <div class="cours-meta">Enseignant : ${escapeHtml(p.enseignant)}</div>
+              </div>
+              ${canDelete ? `<button class="btn-del-planning" onclick="deletePlanning('${p.id}')" title="Supprimer ce cours">✕</button>` : ''}
+            </div>`;
+          planningList.appendChild(li);
+        });
       });
     }
   } catch (e) { console.error('Erreur chargement données:', e); }
@@ -486,6 +508,16 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     alert('Erreur lors de l\'envoi de l\'alerte.');
   }
 });
+
+window.deletePlanning = async function(id) {
+  if (!currentUser) return;
+  if (!confirm('Supprimer ce cours du planning ?')) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/planning_cours?id=eq.${id}`, { method: 'DELETE', headers });
+    if (!res.ok) throw new Error(await res.text());
+    loadData();
+  } catch (e) { console.error(e); alert('Erreur lors de la suppression.'); }
+};
 
 window.participerCours = async function(coursId) {
   if (!currentUser) return;
