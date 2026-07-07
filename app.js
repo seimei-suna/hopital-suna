@@ -378,6 +378,32 @@ async function loadData() {
         coursList.appendChild(li);
       });
     }
+
+    // Load planning des cours
+    const planning = await supaGet('planning_cours', 'select=id,titre,date_heure,enseignant&order=date_heure.asc&limit=60');
+    const planningList = document.getElementById('planning-list');
+    planningList.innerHTML = '';
+    if (planning.length === 0) {
+      planningList.innerHTML = '<li style="opacity:.5;list-style:none">Aucun cours planifié pour le moment</li>';
+    } else {
+      const now = Date.now();
+      planning.forEach(p => {
+        const d = new Date(p.date_heure);
+        const dateStr = d.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+        const heureStr = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        const passe = d.getTime() < now;
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="planning-item${passe ? ' planning-passe' : ''}">
+            <div class="planning-date">${dateStr}<span class="planning-heure">${heureStr}</span></div>
+            <div class="planning-info">
+              <div class="cours-titre">${escapeHtml(p.titre)}</div>
+              <div class="cours-meta">Enseignant : ${escapeHtml(p.enseignant)}</div>
+            </div>
+          </div>`;
+        planningList.appendChild(li);
+      });
+    }
   } catch (e) { console.error('Erreur chargement données:', e); }
 }
 
@@ -394,6 +420,27 @@ document.getElementById('cours-form').addEventListener('submit', async (e) => {
     document.getElementById('cours-desc').value = '';
     loadData();
   } catch (err) { console.error(err); alert('Erreur lors de l\'ajout du cours.'); }
+});
+
+document.getElementById('planning-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!currentUser) return;
+  const titre = document.getElementById('planning-titre').value.trim();
+  const datetimeVal = document.getElementById('planning-datetime').value;
+  const enseignant = document.getElementById('planning-enseignant').value.trim();
+  if (!titre || !datetimeVal || !enseignant) return;
+  try {
+    await supaPost('planning_cours', {
+      shinobi_id: currentUser.id,
+      titre,
+      date_heure: new Date(datetimeVal).toISOString(),
+      enseignant
+    });
+    document.getElementById('planning-titre').value = '';
+    document.getElementById('planning-datetime').value = '';
+    document.getElementById('planning-enseignant').value = '';
+    loadData();
+  } catch (err) { console.error(err); alert('Erreur lors de l\'ajout au planning.'); }
 });
 
 function escapeHtml(text) {
