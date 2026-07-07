@@ -92,6 +92,10 @@ CREATE TABLE IF NOT EXISTS planning_cours (
   created_at timestamptz DEFAULT now()
 );
 
+-- Lien cours <-> planning : un cours créé via le planning est supprimé
+-- automatiquement si le créneau du planning est annulé
+ALTER TABLE cours ADD COLUMN IF NOT EXISTS planning_id uuid REFERENCES planning_cours(id) ON DELETE CASCADE;
+
 -- Table des inscriptions aux cours planifiés
 CREATE TABLE IF NOT EXISTS planning_participations (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,

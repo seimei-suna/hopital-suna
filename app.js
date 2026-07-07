@@ -489,18 +489,20 @@ document.getElementById('planning-form').addEventListener('submit', async (e) =>
   if (!titre || !jour || !heure || !enseignant) return;
   try {
     const dateHeure = new Date(jour + 'T' + heure);
-    await supaPost('planning_cours', {
+    const created = await supaPost('planning_cours', {
       shinobi_id: currentUser.id,
       titre,
       date_heure: dateHeure.toISOString(),
       enseignant
     });
-    // Ajoute aussi le cours dans la section Cours de base
+    // Ajoute aussi le cours dans la section Cours de base, lié au créneau
+    // (supprimé automatiquement en cascade si le créneau est annulé)
     const dayLabel = dateHeure.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' });
     await supaPost('cours', {
       shinobi_id: currentUser.id,
       titre,
-      description: `Prévu le ${dayLabel} à ${heure} — Enseignant : ${enseignant}`
+      description: `Prévu le ${dayLabel} à ${heure} — Enseignant : ${enseignant}`,
+      planning_id: created[0].id
     });
     document.getElementById('planning-titre').value = '';
     document.getElementById('planning-heure').value = '';
