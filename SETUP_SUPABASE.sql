@@ -104,6 +104,15 @@ CREATE TABLE IF NOT EXISTS planning_participations (
   created_at timestamptz DEFAULT now()
 );
 
+-- Registre de lavande (qui a donné de la lavande et combien)
+CREATE TABLE IF NOT EXISTS lavande (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
+  donneur text NOT NULL,
+  montant int NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+
 -- Table des versements de paye (case à cocher "Payé" par shinobi et par période)
 CREATE TABLE IF NOT EXISTS paye_versements (
   shinobi_id uuid REFERENCES shinobis(id) ON DELETE CASCADE,
@@ -124,6 +133,7 @@ ALTER TABLE cours ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cours_participations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planning_cours ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planning_participations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lavande ENABLE ROW LEVEL SECURITY;
 ALTER TABLE paye_versements ENABLE ROW LEVEL SECURITY;
 
 -- DROP les policies existantes avant de les recréer
@@ -137,6 +147,7 @@ DROP POLICY IF EXISTS "Accès public cours" ON cours;
 DROP POLICY IF EXISTS "Accès public cours_participations" ON cours_participations;
 DROP POLICY IF EXISTS "Accès public planning_cours" ON planning_cours;
 DROP POLICY IF EXISTS "Accès public planning_participations" ON planning_participations;
+DROP POLICY IF EXISTS "Accès public lavande" ON lavande;
 DROP POLICY IF EXISTS "Accès public paye_versements" ON paye_versements;
 
 CREATE POLICY "Accès public shinobis" ON shinobis FOR ALL USING (true) WITH CHECK (true);
@@ -149,6 +160,7 @@ CREATE POLICY "Accès public cours" ON cours FOR ALL USING (true) WITH CHECK (tr
 CREATE POLICY "Accès public cours_participations" ON cours_participations FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public planning_cours" ON planning_cours FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public planning_participations" ON planning_participations FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Accès public lavande" ON lavande FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Accès public paye_versements" ON paye_versements FOR ALL USING (true) WITH CHECK (true);
 
 -- Pour promouvoir quelqu'un en gérant (remplace le nom/prénom) :

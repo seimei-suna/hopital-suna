@@ -168,7 +168,7 @@ main { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
 }
 
 /* POSTE */
-.poste-section, .alertes-section, .cours-section, .planning-section {
+.poste-section, .alertes-section, .cours-section, .planning-section, .lavande-section {
   background: rgba(250,243,227,.8);
   backdrop-filter: blur(6px);
   border-radius: 12px; padding: 24px;
@@ -233,6 +233,10 @@ body.dark .planning-dt-row select, body.dark .planning-dt-row input[type="time"]
 body.dark .planning-day-head { color: #e8a87c; }
 body.dark .planning-heure-badge { background: rgba(232,168,124,.12); color: #f3e8d0; }
 body.dark .btn-del-planning { color: #ff8a7a; border-color: rgba(255,138,122,.5); }
+
+/* Registre de lavande */
+.lavande-montant { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; background: rgba(140,110,190,.15); border: 1px solid rgba(140,110,190,.4); color: #7a5fa8; }
+body.dark .lavande-montant { background: rgba(180,150,230,.15); border-color: rgba(180,150,230,.4); color: #c4aef0; }
 body.dark .cours-participants ul li { color: #f3e8d0; }
 
 h3 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 8px; color: var(--brown-dark); }
@@ -384,7 +388,7 @@ body.dark .subtitle, body.dark .info-text,
 body.dark .poste-list h4, body.dark .alertes-list h4, body.dark .cours-list h4 { color: #b9a684; }
 body.dark .auth-form, body.dark .status-card,
 body.dark .poste-section, body.dark .alertes-section, body.dark .cours-section,
-body.dark .planning-section,
+body.dark .planning-section, body.dark .lavande-section,
 body.dark .modal { background: rgba(40,30,18,.92); border-color: #4a3a28; }
 body.dark .field input, body.dark .cours-form input,
 body.dark .cours-form textarea, body.dark .modal textarea {

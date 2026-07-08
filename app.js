@@ -445,6 +445,29 @@ async function loadData() {
         });
       });
     }
+
+    // Load registre de lavande
+    const lavande = await supaGet('lavande', 'select=id,donneur,montant,created_at,shinobi_id&order=created_at.desc&limit=60');
+    const lavandeList = document.getElementById('lavande-list');
+    lavandeList.innerHTML = '';
+    if (lavande.length === 0) {
+      lavandeList.innerHTML = '<li style="opacity:.5;list-style:none">Aucun don enregistré pour le moment</li>';
+    } else {
+      lavande.forEach(l => {
+        const s = shinobiMap[l.shinobi_id];
+        const par = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
+        const date = new Date(l.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <div class="cours-item">
+            <div class="cours-left">
+              <div class="cours-titre">${escapeHtml(l.donneur)} <span class="lavande-montant">${Number(l.montant).toLocaleString('fr-FR')} lavande</span></div>
+              <div class="cours-meta">Enregistré par ${escapeHtml(par)} · ${date}</div>
+            </div>
+          </div>`;
+        lavandeList.appendChild(li);
+      });
+    }
   } catch (e) { console.error('Erreur chargement données:', e); }
 }
 
@@ -509,6 +532,20 @@ document.getElementById('planning-form').addEventListener('submit', async (e) =>
     document.getElementById('planning-enseignant').value = '';
     loadData();
   } catch (err) { console.error(err); alert('Erreur lors de l\'ajout au planning.'); }
+});
+
+document.getElementById('lavande-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!currentUser) return;
+  const donneur = document.getElementById('lavande-nom').value.trim();
+  const montant = parseInt(document.getElementById('lavande-montant').value);
+  if (!donneur || !montant || montant < 1) return;
+  try {
+    await supaPost('lavande', { shinobi_id: currentUser.id, donneur, montant });
+    document.getElementById('lavande-nom').value = '';
+    document.getElementById('lavande-montant').value = '';
+    loadData();
+  } catch (err) { console.error(err); alert('Erreur lors de l\'enregistrement du don.'); }
 });
 
 function escapeHtml(text) {
