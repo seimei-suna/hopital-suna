@@ -63,7 +63,7 @@ async function hashSceau(sceau) {
 
 // --- Charger tous les shinobis (utilisé partout pour les jointures) ---
 async function refreshShinobis() {
-  allShinobis = await supaGet('shinobis', 'select=id,prenom,nom,role,grade&order=nom.asc,prenom.asc');
+  allShinobis = await supaGet('shinobis', 'select=id,prenom,nom,role,grade,absent&order=nom.asc,prenom.asc');
   shinobiMap = {};
   allShinobis.forEach(s => { shinobiMap[s.id] = s; });
 }
@@ -194,7 +194,7 @@ document.getElementById('paye-period').addEventListener('change', loadPaye);
 // --- Load all ---
 async function loadAll() {
   await refreshShinobis();
-  await Promise.all([loadStats(), loadRecap(), loadDetail(), loadGrades(), loadRoles(), loadPostesAdmin(), loadPaye(), loadAvertissements(), loadChat(), loadCoursAdmin()]);
+  await Promise.all([loadStats(), loadRecap(), loadDetail(), loadGrades(), loadRoles(), loadPostesAdmin(), loadPaye(), loadAvertissements(), loadChat(), loadCoursAdmin(), loadAbsences()]);
 }
 
 // --- Stats ---
@@ -503,6 +503,38 @@ window.togglePaye = async function(shinobiId, periodeKey, checked) {
       await supaDelete('paye_versements', `shinobi_id=eq.${shinobiId}&periode_key=eq.${encodeURIComponent(periodeKey)}`);
     }
   } catch (e) { console.error(e); alert('Erreur lors de la mise à jour du statut de paye.'); }
+};
+
+// =====================
+// ABSENCES
+// =====================
+async function loadAbsences() {
+  try {
+    const tbody = document.getElementById('absences-body');
+    tbody.innerHTML = '';
+    if (allShinobis.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" class="empty-row">Aucun shinobi inscrit</td></tr>';
+      return;
+    }
+    allShinobis.forEach(s => {
+      const absent = !!s.absent;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${esc(s.prenom)} ${esc(s.nom)}</strong></td>
+        <td><span class="statut-badge ${absent ? 'statut-absent' : 'statut-present'}">${absent ? 'Absent' : 'Présent'}</span></td>
+        <td><button class="btn-sm" onclick="toggleAbsent('${s.id}', ${absent})">${absent ? 'Marquer présent' : 'Marquer absent'}</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (e) { console.error(e); }
+}
+
+window.toggleAbsent = async function(id, current) {
+  try {
+    await supaPatch('shinobis', `id=eq.${id}`, { absent: !current });
+    await refreshShinobis();
+    loadAbsences();
+  } catch (e) { console.error(e); alert('Erreur lors de la mise à jour de l\'absence.'); }
 };
 
 // =====================

@@ -144,6 +144,12 @@ tbody tr:hover { background: rgba(196,162,101,.12); }
 .grade-badge.expert { background: rgba(212,160,23,.22); color: #8a6d00; border: 1px solid rgba(212,160,23,.5); }
 .grade-badge.aucun { background: rgba(0,0,0,.05); color: var(--text-light); font-style: italic; }
 
+.statut-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+.statut-present { background: rgba(76,175,80,.15); color: #2e7d32; border: 1px solid rgba(76,175,80,.4); }
+.statut-absent { background: rgba(196,69,58,.15); color: #b3372c; border: 1px solid rgba(196,69,58,.4); }
+body.dark .statut-present { color: #81c784; }
+body.dark .statut-absent { color: #ff8a7a; }
+
 .btn-poste-delete {
   padding: 5px 12px; border: 1px solid var(--red-urgence); border-radius: 6px;
   background: transparent; color: var(--red-urgence);

@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestion — Hôpital de Suna</title>
-  <link rel="stylesheet" href="style.css?v=7">
-  <link rel="stylesheet" href="admin.css?v=6">
+  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="admin.css?v=7">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -194,6 +194,18 @@
               </div>
             </details>
             <details class="acc">
+              <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/><path d="M17 3l4 4M21 3l-4 4"/></svg><span>Absences</span><span class="acc-chevron"></span></summary>
+              <div class="acc-body">
+                <p class="info-text">Indique qui est <strong>absent</strong> ou <strong>présent</strong> dans la section.</p>
+                <div class="table-wrapper">
+                  <table id="absences-table">
+                    <thead><tr><th>Shinobi</th><th>Statut</th><th>Action</th></tr></thead>
+                    <tbody id="absences-body"></tbody>
+                  </table>
+                </div>
+              </div>
+            </details>
+            <details class="acc">
               <summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5Z"/><path d="M12 10v4.5"/><circle cx="12" cy="17.4" r="0.6" fill="currentColor" stroke="none"/></svg><span>Avertissements</span><span class="acc-chevron"></span></summary>
               <div class="acc-body">
                 <div class="filters">
@@ -246,6 +258,6 @@
     </div>
   </div>
 
-  <script src="admin.js?v=6"></script>
+  <script src="admin.js?v=7"></script>
 </body>
 </html>

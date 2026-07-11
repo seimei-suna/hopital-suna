@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS shinobis (
 ALTER TABLE shinobis ADD COLUMN IF NOT EXISTS role text DEFAULT 'membre';
 ALTER TABLE shinobis ADD COLUMN IF NOT EXISTS grade text DEFAULT NULL;
 
+-- Colonne absence (gérée par les gérants depuis l'onglet Personnel)
+ALTER TABLE shinobis ADD COLUMN IF NOT EXISTS absent boolean DEFAULT false;
+
 -- Table des postes (prises de service)
 CREATE TABLE IF NOT EXISTS postes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
