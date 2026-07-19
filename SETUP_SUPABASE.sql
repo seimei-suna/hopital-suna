@@ -30,6 +30,15 @@ CREATE TABLE IF NOT EXISTS postes (
 -- Colonne pour savoir qui a forcé la fin du poste (gérant)
 ALTER TABLE postes ADD COLUMN IF NOT EXISTS force_par uuid REFERENCES shinobis(id);
 
+-- Les références "auteur" ne doivent pas bloquer la suppression d'un shinobi :
+-- on les remet à NULL au lieu d'empêcher le DELETE (fix licenciement)
+ALTER TABLE postes DROP CONSTRAINT IF EXISTS postes_force_par_fkey;
+ALTER TABLE postes ADD CONSTRAINT postes_force_par_fkey
+  FOREIGN KEY (force_par) REFERENCES shinobis(id) ON DELETE SET NULL;
+ALTER TABLE avertissements DROP CONSTRAINT IF EXISTS avertissements_par_id_fkey;
+ALTER TABLE avertissements ADD CONSTRAINT avertissements_par_id_fkey
+  FOREIGN KEY (par_id) REFERENCES shinobis(id) ON DELETE SET NULL;
+
 -- Table des alertes (urgences et chirurgiens)
 CREATE TABLE IF NOT EXISTS alertes (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,

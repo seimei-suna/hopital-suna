@@ -599,7 +599,13 @@ async function loadGrades() {
       try {
         await supaDelete('shinobis', `id=eq.${btn.dataset.id}`);
         await loadAll();
-      } catch (e) { console.error(e); btn.disabled = false; }
+      } catch (e) {
+        console.error(e);
+        btn.disabled = false;
+        alert('Impossible de licencier : ' + (('' + e.message).includes('foreign key') || ('' + e.message).includes('23503')
+          ? 'ce profil est encore référencé en base (exécute le bloc SQL "fix licenciement" du fichier SETUP_SUPABASE.sql dans Supabase).'
+          : e.message));
+      }
     });
   });
 
