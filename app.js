@@ -19,6 +19,9 @@ let currentUser = null;
 let enPoste = false;
 let posteId = null;
 let refreshInterval = null;
+let annuaire = [];
+let lastPlanning = [];
+let editingPlanningId = null;
 
 // --- API helpers ---
 async function supaGet(table, query = '') {
@@ -264,6 +267,7 @@ async function loadData() {
     const allShinobis = await supaGet('shinobis', 'select=id,prenom,nom');
     const shinobiMap = {};
     allShinobis.forEach(s => { shinobiMap[s.id] = s; });
+    annuaire = allShinobis.slice().sort((a, b) => (a.prenom + a.nom).localeCompare(b.prenom + b.nom));
 
     // Load active personnel
     const postes = await supaGet('postes', 'actif=eq.true&select=id,debut,shinobi_id');
@@ -381,6 +385,7 @@ async function loadData() {
 
     // Load planning des cours (emploi du temps jour par jour)
     const planning = await supaGet('planning_cours', 'select=id,titre,date_heure,enseignant,shinobi_id&order=date_heure.asc&limit=80');
+    lastPlanning = planning;
     const planningParts = await supaGet('planning_participations', 'select=planning_id,shinobi_id');
     const partsByPlanning = {};
     planningParts.forEach(pp => {
@@ -419,10 +424,14 @@ async function loadData() {
           const canDelete = currentUser && (isGerantPlanning || p.shinobi_id === currentUser.id);
           const pIds = partsByPlanning[p.id] || [];
           const registered = currentUser && pIds.includes(currentUser.id);
-          const pNames = pIds.map(id => {
+          const partRows = pIds.map(id => {
             const s = shinobiMap[id];
-            return s ? `${s.prenom} ${s.nom}` : 'Inconnu';
-          });
+            const n = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
+            return `<li>${escapeHtml(n)}${canDelete ? ` <button class="part-remove" onclick="removePlanningPart('${p.id}','${id}')" title="Retirer ce participant">✕</button>` : ''}</li>`;
+          }).join('');
+          const addOpts = canDelete
+            ? annuaire.filter(s => !pIds.includes(s.id)).map(s => `<option value="${s.id}">${escapeHtml(s.prenom + ' ' + s.nom)}</option>`).join('')
+            : '';
           const li = document.createElement('li');
           li.className = 'planning-row';
           li.innerHTML = `
@@ -433,13 +442,15 @@ async function loadData() {
                 <div class="cours-meta">Enseignant : ${escapeHtml(p.enseignant)}</div>
               </div>
               ${!passe ? `<button class="btn-participer${registered ? ' participe' : ''}" onclick="togglePlanningPart('${p.id}',${registered})" title="${registered ? 'Cliquer pour se désinscrire' : 'S\'inscrire à ce cours'}">${registered ? '✓ Inscrit' : 'Je participe'}</button>` : ''}
+              ${canDelete ? `<button class="btn-edit-planning" onclick="editPlanning('${p.id}')" title="Modifier ce cours">✎</button>` : ''}
               ${canDelete ? `<button class="btn-del-planning" onclick="deletePlanning('${p.id}')" title="Supprimer ce cours">✕</button>` : ''}
             </div>
             <details class="cours-participants">
-              <summary>Participants (${pNames.length})</summary>
-              ${pNames.length
-                ? `<ul>${pNames.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`
+              <summary>Participants (${pIds.length})</summary>
+              ${pIds.length
+                ? `<ul>${partRows}</ul>`
                 : `<p class="no-participants">Personne d'inscrit pour le moment</p>`}
+              ${addOpts ? `<div class="planning-add-part"><select id="addpart-${p.id}">${addOpts}</select><button type="button" class="btn-sm" onclick="addPlanningPart('${p.id}')">+ Ajouter</button></div>` : ''}
             </details>`;
           planningList.appendChild(li);
         });
@@ -512,26 +523,39 @@ document.getElementById('planning-form').addEventListener('submit', async (e) =>
   if (!titre || !jour || !heure || !enseignant) return;
   try {
     const dateHeure = new Date(jour + 'T' + heure);
-    const created = await supaPost('planning_cours', {
-      shinobi_id: currentUser.id,
-      titre,
-      date_heure: dateHeure.toISOString(),
-      enseignant
-    });
-    // Ajoute aussi le cours dans la section Cours de base, lié au créneau
-    // (supprimé automatiquement en cascade si le créneau est annulé)
     const dayLabel = dateHeure.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' });
-    await supaPost('cours', {
-      shinobi_id: currentUser.id,
-      titre,
-      description: `Prévu le ${dayLabel} à ${heure} — Enseignant : ${enseignant}`,
-      planning_id: created[0].id
-    });
-    document.getElementById('planning-titre').value = '';
-    document.getElementById('planning-heure').value = '';
-    document.getElementById('planning-enseignant').value = '';
+    const description = `Prévu le ${dayLabel} à ${heure} — Enseignant : ${enseignant}`;
+
+    if (editingPlanningId) {
+      // Modification d'un cours existant + mise à jour du cours lié
+      await supaPatch('planning_cours', `id=eq.${editingPlanningId}`, {
+        titre,
+        date_heure: dateHeure.toISOString(),
+        enseignant
+      });
+      await supaPatch('cours', `planning_id=eq.${editingPlanningId}`, { titre, description });
+      cancelEditPlanning();
+    } else {
+      const created = await supaPost('planning_cours', {
+        shinobi_id: currentUser.id,
+        titre,
+        date_heure: dateHeure.toISOString(),
+        enseignant
+      });
+      // Ajoute aussi le cours dans la section Cours de base, lié au créneau
+      // (supprimé automatiquement en cascade si le créneau est annulé)
+      await supaPost('cours', {
+        shinobi_id: currentUser.id,
+        titre,
+        description,
+        planning_id: created[0].id
+      });
+      document.getElementById('planning-titre').value = '';
+      document.getElementById('planning-heure').value = '';
+      document.getElementById('planning-enseignant').value = '';
+    }
     loadData();
-  } catch (err) { console.error(err); alert('Erreur lors de l\'ajout au planning.'); }
+  } catch (err) { console.error(err); alert('Erreur lors de l\'enregistrement du cours.'); }
 });
 
 document.getElementById('lavande-form').addEventListener('submit', async (e) => {
@@ -591,6 +615,61 @@ document.getElementById('modal-confirm').addEventListener('click', async () => {
     alert('Erreur lors de l\'envoi de l\'alerte.');
   }
 });
+
+window.editPlanning = function(id) {
+  const p = lastPlanning.find(x => x.id === id);
+  if (!p) return;
+  editingPlanningId = id;
+  const d = new Date(p.date_heure);
+  const jourVal = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const sel = document.getElementById('planning-jour');
+  if (!Array.from(sel.options).some(o => o.value === jourVal)) {
+    const opt = document.createElement('option');
+    opt.value = jourVal;
+    opt.textContent = d.toLocaleDateString('fr-FR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+    opt.dataset.temp = '1';
+    sel.insertBefore(opt, sel.firstChild);
+  }
+  sel.value = jourVal;
+  document.getElementById('planning-titre').value = p.titre;
+  document.getElementById('planning-heure').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  document.getElementById('planning-enseignant').value = p.enseignant;
+  document.getElementById('planning-submit-btn').textContent = 'Modifier le cours';
+  document.getElementById('planning-cancel-edit').classList.remove('hidden');
+  document.getElementById('planning-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+function cancelEditPlanning() {
+  editingPlanningId = null;
+  document.getElementById('planning-titre').value = '';
+  document.getElementById('planning-heure').value = '';
+  document.getElementById('planning-enseignant').value = '';
+  const sel = document.getElementById('planning-jour');
+  Array.from(sel.options).forEach(o => { if (o.dataset.temp) o.remove(); });
+  sel.selectedIndex = 0;
+  document.getElementById('planning-submit-btn').textContent = 'Ajouter au planning';
+  document.getElementById('planning-cancel-edit').classList.add('hidden');
+}
+document.getElementById('planning-cancel-edit').addEventListener('click', cancelEditPlanning);
+
+window.addPlanningPart = async function(planningId) {
+  if (!currentUser) return;
+  const sel = document.getElementById('addpart-' + planningId);
+  if (!sel || !sel.value) return;
+  try {
+    await supaPost('planning_participations', { planning_id: planningId, shinobi_id: sel.value });
+    loadData();
+  } catch (e) { console.error(e); alert('Erreur lors de l\'ajout du participant.'); }
+};
+
+window.removePlanningPart = async function(planningId, shinobiId) {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/planning_participations?planning_id=eq.${planningId}&shinobi_id=eq.${shinobiId}`, { method: 'DELETE', headers });
+    if (!res.ok) throw new Error(await res.text());
+    loadData();
+  } catch (e) { console.error(e); alert('Erreur lors du retrait du participant.'); }
+};
 
 window.togglePlanningPart = async function(planningId, registered) {
   if (!currentUser) return;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hôpital de Suna — Centre Médical Shinobi</title>
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -143,7 +143,10 @@
                   <input type="time" id="planning-heure" required>
                 </div>
                 <input type="text" id="planning-enseignant" placeholder="Nom de l'enseignant" maxlength="80" required>
-                <button type="submit" class="btn-primary">Ajouter au planning</button>
+                <div style="display:flex;gap:10px;align-items:center">
+                  <button type="submit" id="planning-submit-btn" class="btn-primary">Ajouter au planning</button>
+                  <button type="button" id="planning-cancel-edit" class="btn-sm hidden">Annuler la modification</button>
+                </div>
               </form>
               <div class="cours-list">
                 <h4>Prochains cours</h4>
@@ -185,6 +188,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=12"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>
