@@ -340,49 +340,6 @@ async function loadData() {
       alertesContainer.classList.add('hidden');
     }
 
-    // Load cours
-    const cours = await supaGet('cours', 'select=id,titre,description,created_at,shinobi_id&order=created_at.desc&limit=40');
-    const allParticipations = await supaGet('cours_participations', 'select=cours_id,shinobi_id');
-    const participantsByCours = {};
-    allParticipations.forEach(p => {
-      if (!participantsByCours[p.cours_id]) participantsByCours[p.cours_id] = [];
-      participantsByCours[p.cours_id].push(p.shinobi_id);
-    });
-    const coursList = document.getElementById('cours-list');
-    coursList.innerHTML = '';
-    if (cours.length === 0) {
-      coursList.innerHTML = '<li style="opacity:.5;list-style:none">Aucun cours pour le moment</li>';
-    } else {
-      cours.forEach(c => {
-        const s = shinobiMap[c.shinobi_id];
-        const nom = s ? `${s.prenom} ${s.nom}` : 'Inconnu';
-        const date = new Date(c.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
-        const participantIds = participantsByCours[c.id] || [];
-        const participated = currentUser && participantIds.includes(currentUser.id);
-        const isOwnCours = currentUser && c.shinobi_id === currentUser.id;
-        const participantNames = participantIds.map(id => {
-          const p = shinobiMap[id];
-          return p ? `${p.prenom} ${p.nom}` : 'Inconnu';
-        });
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <div class="cours-item">
-            <div class="cours-left">
-              <div class="cours-titre">${escapeHtml(c.titre)}${c.description ? ` <span class="cours-desc-text">— ${escapeHtml(c.description)}</span>` : ''}</div>
-              <div class="cours-meta">${escapeHtml(nom)} · ${date}</div>
-            </div>
-            ${!isOwnCours ? `<button class="btn-participer${participated ? ' participe' : ''}" ${participated ? 'disabled' : `onclick="participerCours('${c.id}')"`}>${participated ? '✓ Participé' : "J'ai participé"}</button>` : ''}
-          </div>
-          <details class="cours-participants">
-            <summary>Participants (${participantNames.length})</summary>
-            ${participantNames.length
-              ? `<ul>${participantNames.map(n => `<li>${escapeHtml(n)}</li>`).join('')}</ul>`
-              : `<p class="no-participants">Aucun participant pour le moment</p>`}
-          </details>`;
-        coursList.appendChild(li);
-      });
-    }
-
     // Load planning des cours (emploi du temps jour par jour)
     const planning = await supaGet('planning_cours', 'select=id,titre,date_heure,enseignant,shinobi_id&order=date_heure.asc&limit=80');
     lastPlanning = planning;
@@ -481,21 +438,6 @@ async function loadData() {
     }
   } catch (e) { console.error('Erreur chargement données:', e); }
 }
-
-// --- Cours ---
-document.getElementById('cours-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!currentUser) return;
-  const titre = document.getElementById('cours-titre').value.trim();
-  const desc = document.getElementById('cours-desc').value.trim();
-  if (!titre) return;
-  try {
-    await supaPost('cours', { shinobi_id: currentUser.id, titre, description: desc || null });
-    document.getElementById('cours-titre').value = '';
-    document.getElementById('cours-desc').value = '';
-    loadData();
-  } catch (err) { console.error(err); alert('Erreur lors de l\'ajout du cours.'); }
-});
 
 // Remplit le menu des jours (aujourd'hui + 13 jours), sans afficher l'année
 (function populatePlanningJours() {
@@ -692,14 +634,6 @@ window.deletePlanning = async function(id) {
     if (!res.ok) throw new Error(await res.text());
     loadData();
   } catch (e) { console.error(e); alert('Erreur lors de la suppression.'); }
-};
-
-window.participerCours = async function(coursId) {
-  if (!currentUser) return;
-  try {
-    await supaPost('cours_participations', { cours_id: coursId, shinobi_id: currentUser.id });
-    loadData();
-  } catch (e) { console.error(e); }
 };
 
 window.resolveAlerte = async function(id) {

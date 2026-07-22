@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hôpital de Suna — Centre Médical Shinobi</title>
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -54,7 +54,6 @@
         <nav class="sidebar-nav">
           <button class="snav active" data-group="poste"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/></svg> Mon Poste</button>
           <button class="snav" data-group="alertes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg> Alertes</button>
-          <button class="snav" data-group="cours"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18"/></svg> Cours</button>
           <button class="snav" data-group="planning"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16"/><path d="M8 3v3.5M16 3v3.5"/></svg> Planning des Cours</button>
           <button class="snav" data-group="lavande"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 13c-2.5 0-4.5-2-4.5-5C7.5 5 9.5 3 12 3s4.5 2 4.5 5c0 3-2 5-4.5 5z"/><path d="M8.5 16c1 1.2 2.1 1.8 3.5 1.8s2.5-.6 3.5-1.8"/></svg> Lavande</button>
         </nav>
@@ -110,23 +109,6 @@
               <div id="alertes-actives" class="alertes-list hidden">
                 <h4>Alertes en cours</h4>
                 <ul id="alertes-list"></ul>
-              </div>
-            </section>
-          </div>
-
-          <!-- GROUPE COURS -->
-          <div class="group-panel" data-group="cours">
-            <section class="cours-section">
-              <h3><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H18v15H6.5A1.5 1.5 0 0 0 5 19.5Z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H18"/></svg> Cours de la Section</h3>
-              <p class="info-text">Note ici les cours que tu donnes aux membres de la Seimei.</p>
-              <form id="cours-form" class="cours-form">
-                <input type="text" id="cours-titre" placeholder="Sujet du cours (ex. Suture avancée)" maxlength="120" required>
-                <textarea id="cours-desc" placeholder="Détails (optionnel)" rows="2"></textarea>
-                <button type="submit" class="btn-primary">Ajouter le cours</button>
-              </form>
-              <div class="cours-list">
-                <h4>Cours récents</h4>
-                <ul id="cours-list"></ul>
               </div>
             </section>
           </div>
@@ -188,6 +170,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
